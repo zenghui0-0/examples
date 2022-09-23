@@ -1,0 +1,3 @@
+[new node]
+1, const myNode = () =>{ return <div></div>}
+2, {myNode}
