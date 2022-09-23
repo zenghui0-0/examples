@@ -1,0 +1,10 @@
+[install]
+1, https://groovy.apache.org/download.html
+2, sudo apt install openjdk-11-jdk -y
+3, curl -s "https://get.sdkman.io" | bash
+4, source "$HOME/.sdkman/bin/sdkman-init.sh"
+5, sdk install groovy
+
+[DEBUG]
+1, groovysh;
+2, groovyConsole;
