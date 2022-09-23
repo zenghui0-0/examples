@@ -1,0 +1,23 @@
+1, update build no:Jenkins.instance.getItemByFullName("pipeline_name").updateNextBuildNumber(6000);
+2, check Credentials: (failed)
+"node_name" {
+    withCredentials([usernamePassword(credentialsId: "69xxxx-some-hash", passwordVariable:"PASSWORD", usernameVariable: "USER")]) {
+        println(${PASSWORD})
+        println(${USER})
+    }
+}
+3, interal servers:
+import hudson.model.*
+for (server in hudson.model.Hudson.instance.slaves) {
+  def server_name = server.getDisplayName();
+  def raw_label = server.getLabelString()
+  println("try server ${server_name}".toString());
+  println("server label: $raw_label")
+  println server.getComputer().countBusy();
+}
+
+4, check runing builds:
+runningBuilds = Jenkins.instance.getView('All').getBuilds().findAll() { it.getResult().equals(null) }
+
+5, stop a Job: build_url/stop, build_url/term, build_url/kill 
+6, docs:https://www.jenkins.io/doc/book/using/aborting-a-build/
