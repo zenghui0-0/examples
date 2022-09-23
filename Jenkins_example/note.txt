@@ -21,3 +21,4 @@ runningBuilds = Jenkins.instance.getView('All').getBuilds().findAll() { it.getRe
 
 5, stop a Job: build_url/stop, build_url/term, build_url/kill 
 6, docs:https://www.jenkins.io/doc/book/using/aborting-a-build/
+7, ubuntu slave node check:  $ps -eo pid,lstart,cmd | grep slave
