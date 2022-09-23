@@ -1,0 +1,29 @@
+[upload]
+1,export JFROG_CLI_OFFER_CONFIG=false;jfrog rt u --url="http://10.xxx.xxx.xxx:8082/artifactory" --user="****" --password="****" --quiet --recursive=true --flat=false "/root/local_path(*)" "AssemblyLine/remove_path/{1}"
+
+[download]
+export JFROG_CLI_OFFER_CONFIG=false;TMPDIR="/root/local_path/tmp" jfrog rt dl --url="http://10.xx.xx.xxx:8082/artifactory" --user="****" --password="****" --quiet  --recursive=true --flat=true "AssemblyLine/ariti_path/(*)" "/root/local_path/{1}"
+
+[delete]
+jfrog rt del --url=\"${arti_url}\" --user=\"\$USER\" --password=\"\$PASSWORD\" --quiet \"${dst}\
+jfrog rt del --url="http://10.xx.xxx.xx:8082/artifactory" --user="***" --password="****" --quiet "AssemblyLine/remove_path/file_name"
+
+[move]
+jfrog rt mv --url=\"${arti_url}\" --user=\"\$USER\" --password=\"\$PASSWORD\" --recursive=false --flat=true \"${srcfile}\" \"${dstfile}\"
+
+[search]
+export JFROG_CLI_OFFER_CONFIG=false;jfrog rt s --url=\"${arti_url}\" --user=\"\$USER\" --password=\"\$PASSWORD\" --include-dirs=true --recursive=false \"${src}\"
+
+[client]
+1, curl -fL https://getcli.jfrog.io | sh; mv jfrog /bin/
+2, export JFROG_CLI_OFFER_CONFIG=false
+
+
+[start]
+1, ssh root@your-Artifactory
+2, service artifactory start
+3, systemctl status artifactory.service
+4, service artifactory restart
+5, service cron restart
+6, service artifactory restart
+7, service artifactory status
