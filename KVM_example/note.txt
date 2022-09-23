@@ -1,0 +1,10 @@
+1, virt-manager
+2, $virsh list --all;
+3, $virsh domifaddr hostname  or $virsh domifaddr 5
+4, xtightvncviewer 192.168.xxx.xx or vncviewer 192.168.xxx.xx
+5, shutdown: virsh shutdown host_name
+6, start: virsh start hostname
+7, destroy: virsh destroy hostname
+
+[install]
+1, virt-install
