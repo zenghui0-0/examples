@@ -1,0 +1,38 @@
+1, limit: select * from table_name limit 1;
+2, limit last lines: select * from table_name ORDER BY ID LIMIT 2 ;
+
+[backup]
+1, mysqldump -u root -h host -p dbname > backdb.sql
+2, mysql -u root -p [dbname] < backup.sql
+
+
+[join]
+select testreport_testreport.id,testreport_testreport.test_start_time,testreport_testreport.test_end_time,testreport_testserverrecord.testserver_id from testreport_testreport left join testreport_testserverrecord on testreport_testreport.id=testreport_testserverrecord.testreport_id where testreport_testserverrecord.testserver_id=86;
+select * from testreport_testcaserun left join testreport_testcasequalityscore on testreport_testcaserun.testcase_id=testreport_testcasequalityscore.testcase_id where testreport_testcaserun.id in (select testcaserun_id  from testreport_testreport_test_case_run where testreport_id=23436);
+SELECT SUM(*) FROM testreport_testcaserun LEFT JOIN testreport_testcasequalityscore ON testreport_testcaserun.testcase_id=testreport_testcasequalityscore.testcase_id WHERE testreport_testcaserun.id IN (SELECT testcaserun_id FROM testreport_testreport_test_case_run WHERE testreport_id=23436 AND asic="VG10");
+
+
+
+[port]
+show global variables like 'port';
+
+[foreign_key_check]
+show global variables like 'foreign_key_checks';
+
+[date]
+select create_time from testreport_testreport where run_step<3 and TO_DAYS(NOW())-TO_DAYS(create_time) > 15;
+select * from testreport_testreport where test_start_time is NULL and TO_DAYS(NOW())-TO_DAYS(create_time) < 30;
+#case run in past 6 month
+select distinct testcase_id from testreport_testcaserun where create_time between date_sub(now(),interval 6 month) and now();
+
+[grant]
+grant all privileges on sonar.* to sonarqube@localhost ;
+
+[in]
+select testcase_id from testreport_testcaserun where id in (select testcaserun_id from testreport_testreport_test_case_run where testreport_id=21964);
+
+select * from testreport_testcaserun where id in (select testcaserun_id  from testreport_testreport_test_case_run where testreport_id=23436)
+
+[toFile]
+1,mysql -h 10.67.91.245 -u root -p -P 3301 -e "use CGTP;select testreport_testcase.name,testreport_testcasequalityscore.usecase,testreport_testcasequalityscore.performance from testreport_testcase left join testreport_testcasequalityscore on testreport_testcase.id=testreport_testcasequalityscore.testcase_id where usecase is NULL;" > no_score.txt
+2,mysql -h 10.67.91.245 -u root -p -P 3301 -e "use CGTP;select testreport_testcase.name,testreport_testcasequalityscore.usecase from testreport_testcase left join testreport_testcasequalityscore on testreport_testcase.id=testreport_testcasequalityscore.testcase_id where usecase is NULL" > no_score_in_6_month.txt
