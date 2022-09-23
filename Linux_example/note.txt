@@ -1,0 +1,3 @@
+[JDK]
+1, install: 1), ubuntu:sudo apt install openjdk-11-jdk -y; 2), centos: sudo yum search java-11;sudo yum install java-11-openjdk -y.
+
