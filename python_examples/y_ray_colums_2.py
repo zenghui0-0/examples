@@ -61,7 +61,7 @@ def percentage_stacked_columns(results, category_names):
     plt.legend(["pass", "fail"], loc = 3)
     plt.yticks(range(len(list(results.keys()))), labels)
     plt.xlabel('Pass rate')
-    plt.title('Libgv promotion test result')
+    plt.title('test result')
     plt.savefig("./p11.jpg")
 
 def line_chart(results, category_names):
