@@ -1,0 +1,42 @@
+[shell]
+1, python manage.py shell
+2, from testreport.models import *
+3, servers = TestServer.objects.get(id=1)
+
+
+[ForeignKey]
+1, python manage.py shell
+2, from testreport.models import *
+3, servers = TestServer.objects.get(id=1)
+4, servers.testserver_record.all()
+5, ts = TestServer.objects.filter(testserver_record__testreport=13671)
+
+[ForeignKey2]
+1, python manage.py shell
+2, from testreport.models import *
+3, report = TestReport.objects.get(id=11014)
+4, case_run = report.test_case_run.all()
+5, list(report.test_case_run.all().values_list("asic", flat=True).distinct())
+
+[annotate]
+data = PromotionReport.objects.annotate(year=ExtractYear('create_time'),month=ExtractMonth('create_time')).values('year','month').order_by('-year', '-month').annotate(num=Count('id'))
+
+[migration]
+1, python manage.py makemigrations
+2, python manage.py migrate
+
+[crontabs]
+1, python manage.py crontab add
+2, python manage.py crontab remove
+3, python manage.py crontab show
+
+[passreport]
+report = TestReport.objects.filter(type=1).filter(project_name="libgv").filter(create_time__gte="2022-01-01")
+passcase=[]
+for report in reports:
+    all_cases = report.test_case_run
+    n_all_cases = all_cases.count()
+    pass_cases = all_cases.filter(status=2)
+    n_pass_cases = pass_cases.count()
+    if n_pass_cases==n_all_cases and n_all_cases !=0:
+        passcase.append(report.id)
