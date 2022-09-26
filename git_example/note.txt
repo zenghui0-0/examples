@@ -1,0 +1,62 @@
+[Setup]
+1, git clone ""
+2, please using administrator to do this when error happend, it will add known hosts.
+3, cd local_repo
+4, git fetch
+5, git branch -a
+4, git checkout -b branch_name remotes/origin/branch_name
+5, git pull origin branch_name --rebase
+6, git commit -am ""
+7, git push origin HEAD:refs/for/branch_name
+
+
+[amend]
+1, git add.
+2, git commit --amend
+3, git push origin HEAD:refs/for/branch_name
+
+[key]
+1. open git bash as administrator;
+2. ssh-keygen -t rsa -C "your_name@email.com"
+3. eval $(ssh-agent -s)
+4. ssh-add ~/.ssh/id_rsa
+5. copy content in "~/.ssh/id_rsa.pub" to gerrit->settings->SSH Keys
+
+[log]
+1, git log filename
+2, git log -p filename
+
+[HEAD detached from]
+1, git checkout -b temp
+2, git checkout -f
+3, git checkout your_branch
+4, git branch -d temp
+
+[stash]
+1, git stash
+2, git stash list
+3, git pull origin your_branch --rebase
+4, git stash pop stash@{0}
+
+[branch]
+1, git stash
+2, git checkout your_branch
+3, git pull origin your_branch --rebase
+4, create a new branch on gerrite UI or locally: git checkout -b test_branch1 && git push
+5, git checkout -b your_branch-hui remotes/origin/your_branch-hui
+6, git merge your_branch --squash
+7, git branch -D <your_branch> // this deletes locally
+8, git push origin --delete <your_branch> // this delete branch on remote
+9, git rev-parse --abbrev-ref local_branch_name@{upstream} #check remote branch for this local_branch_name
+
+[merge]
+1, git checkout your_branch
+2, git merge your_branch-hui
+3, git status
+4, git mergetool
+
+[revert]
+1, git revert -n commit_id
+
+[GIT_SSH_COMMAND]
+GIT_SSH_COMMAND='ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no' git clone -b master ssh://your_name@gerrit-git.xxx.com:29418/your_repo_path
