@@ -1,0 +1,14 @@
+1, Discard old builds: 
+2, This project is parameterized: String Parameters => MASTER_AGENT: CI-Master
+                                                       MASTER_CONFIG_PATH: config/xxx.config
+                                                       DEBUG_PATCH: 
+                                                       LOG_LEVEL: 15
+3, Throttle Concurrent Builds: Throttle this project alone
+   Maximum Total Concurrent Builds: 3
+   Number of builds: 120
+   Time period: Hour
+4, Build Triggers => Build periodically: H(06-12) 17 * * 1,4
+5, Build Triggers => Gerrit Trigger => Choose a Server: xxx.com => Add => patchset create
+                                                                   Dynamic Trigger Configuration: Type	Pattern	Branches
+6, Advanced Project Options => Pipeline => Definition: Pipeline script from SMC
+                                           Script Path: your_path/jenkinsfile
