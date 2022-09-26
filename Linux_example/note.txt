@@ -1,3 +1,35 @@
 [JDK]
 1, install: 1), ubuntu:sudo apt install openjdk-11-jdk -y; 2), centos: sudo yum search java-11;sudo yum install java-11-openjdk -y.
 
+[mount]
+sudo mount -t cifs //10.xxx.xx.xx/win_share /mnt -o username=your_name,password=your_pass,vers=2.0
+mount.cifs //10.xxx.xx.xx/win_share /mnt -o username=your_name,password=your_pass,vers=2.0
+umount /mnt
+
+[install]
+1, sudo fdisk -l
+2, sudo umount /dev/sdb1
+3, sudo mkfs.vfat /dev/sdb -I
+4, sudo dd if=~/Downloads/ubuntu-16.04-desktop-am64.iso of=/dev/sdb status=progress
+or using tool rufus-3.14
+
+[remote]
+1, check: ps -e|grep ssh 
+2, install: apt-get install ssh
+3, start: sudo /etc/init.d/ssh start
+4, enable root remote: sudo vim /etc/ssh/sshd_config; PermitRootLogin yes
+5, restart: service ssh restart
+
+[boot_order]
+1, cat /etc/default/grub
+2, GRUB_DEFAULT="Advanced options for Ubuntu>Ubuntu, with Linux 5.4.0-acso"
+
+
+[kernel]
+1, list: dpkg --get-selections | grep linux
+2, install: $ sudo dpkg -i *.deb
+3, remove: $ sudo apt remove linux-image-<version>-generic
+           $ sudo apt remove linux-headers-<version>
+           $ sudo apt remove linux-headers-<version>-generic
+           $ sudo apt remove linux-modules-<version>-generic
+4, update grub: $ sudo update-grub
