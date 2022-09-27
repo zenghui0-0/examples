@@ -18,6 +18,11 @@ export JFROG_CLI_OFFER_CONFIG=false;jfrog rt s --url=\"${arti_url}\" --user=\"\$
 1, curl -fL https://getcli.jfrog.io | sh; mv jfrog /bin/
 2, export JFROG_CLI_OFFER_CONFIG=false
 
+[plugin]
+1, download https://github.com/jfrog/artifactory-user-plugins/tree/master/cleanup/artifactCleanup
+2, put into: jfrog/artifactory/var/etc/artifactory/plugins
+3, reload: curl -u admin:"<your_password>" -X POST 'http://<your_arti_server>:8082/artifactory/api/plugins/reload/'  --header 'Content-Type: text/plain'
+
 
 [start]
 1, ssh root@your-Artifactory
