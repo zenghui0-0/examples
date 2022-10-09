@@ -33,3 +33,8 @@ or using tool rufus-3.14
            $ sudo apt remove linux-headers-<version>-generic
            $ sudo apt remove linux-modules-<version>-generic
 4, update grub: $ sudo update-grub
+
+
+[curl]
+res=`curl -X GET --url "http://your_server.com" -u "username":"password" -H "Content-Type: application/json"`
+res=`curl -X GET --url "http://your_server.com" -H "Content-Type: application/json" -H "Authorization: Token your_token`
