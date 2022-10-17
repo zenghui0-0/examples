@@ -1,0 +1,34 @@
+json_parser = load "odules/parser/json_parser.gvy"  // return this;
+
+ 
+pipeline {
+    agent none
+    parameters {
+        string(
+            name: "MASTER_AGENT",
+            defaultValue: params.MASTER_AGENT ? params.MASTER_AGENT : "master-agent",
+            description: "Assembly Line master NOT Jenkins master",
+            trim: true
+        )
+    }
+
+    environment {
+    }
+
+    stages {
+        stage("") {
+            agent {
+                node { label params.MASTER_AGENT }
+            }
+            steps {
+                script {
+                    dir("assembly_line") {
+                        m = load "main.gvy"
+                        m.go(config)
+                    }
+                }
+            }
+        }
+
+    }
+}
