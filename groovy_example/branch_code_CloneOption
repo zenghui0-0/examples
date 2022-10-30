@@ -1,0 +1,13 @@
+def url = "ssh://${SSH_USER}@git.xxx.com:29418/tools/ci"
+checkout([
+    $class: 'GitSCM',
+    userRemoteConfigs: [[
+        credentialsId: credential,
+        url: url
+    ]],
+    extensions: [[
+	    $class: 'CloneOption', 
+		timeout: 60
+	]],
+    branches: [[name: branch]],
+])

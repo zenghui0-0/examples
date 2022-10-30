@@ -23,6 +23,8 @@ pipeline {
             steps {
                 script {
                     dir("assembly_line") {
+                        json_parser = load "modules/parser/json_parser.gvy"
+                        def config = json_parser.parseFromFile(params.MASTER_CONFIG_PATH)
                         m = load "main.gvy"
                         m.go(config)
                     }
