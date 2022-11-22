@@ -17,6 +17,8 @@ class TestMinus(object):
     def minus_test():
         assert minus(3, 1) == 2, "ERRORED"
 
+
+
 class Test_Minus(object):
 
     def test_minus():
@@ -31,11 +33,3 @@ class TestPlus(object):
 
     def test_plus(self):
         assert plus(1, 2) == 3, "ERRORED"
-
-
-
-class Math(object):
-
-    def test_plus():
-        assert plus(1, 2) == 3, "ERRORED"
-
