@@ -47,8 +47,8 @@ def test_threads_join(td_time, ml_time):
     t_3dmark.start()
     t_memoryleak = MyThread(memory_leak, [ml_time])
     t_memoryleak.start()
-    ret1 = t_3dmark.join()
-    ret2 = t_memoryleak.join()
+    #ret1 = t_3dmark.join()
+    #ret2 = t_memoryleak.join()
     assert False, f'Failed, 3dmark return: {ret1}, memoryleak return: {ret2}'
     print("Test 3dmark, memoryleak PASSED.")
 
