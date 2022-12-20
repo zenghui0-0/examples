@@ -3,33 +3,34 @@ import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
 def buildStages(config, global_config, server) {
     def stages = {
         stage("Server Execute") {
-		    waitUntil{
-			}
-			def parallel_in_node = [:]
-			parallel_in_node["On ${server["Name"]}"] = {
-			    node(server["Name"]) {
+            waitUntil{
+            }
+            def parallel_in_node = [:]
+            parallel_in_node["On ${server["Name"]}"] = {
+                node(server["Name"]) {
                     stage("PreBuild") {
-				    }
-					stage("BuildExe") {
-					}
-					stage("PostBuild") {
-					}
-				}
-			}
-			lock(server["Name"]) {
-			    while (retry > 0) {
-                    retry --
+                    }
+                    stage("BuildExe") {
+                    }
+                    stage("PostBuild") {
+                    }
+                }
+            }
+            lock(server["Name"]) {
+                while (retry > 0) {
+		    retry --
                     try {
                         parallel parallel_in_node
                         break
                     } catch (FlowInterruptedException e) {
-					} catch (Exception e) {
-					}
-					server['StatusCode'] = "Success" // will stop all tests on this node
-			}
-		}
-	}
-	return stages
+                    } catch (Exception e) {
+                    }
+                    server['StatusCode'] = "Success" // will stop all tests on this node
+                }
+            }
+        }
+    }
+    return stages
 }
 
 def buildInParallel(config, global_config) {
