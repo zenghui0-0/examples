@@ -1,0 +1,26 @@
+def node_init() {
+    System.setProperty("org.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL", "86400");
+	if (isUnix()) {
+        ret = init_linux()
+    } else {
+        ret = init_win()
+    }
+}
+
+def init_linux() {
+    exec("rm -rf ./* .git .gitignore")
+	exec("git clone -b ")
+	if (env.debug_patch){
+	    exec('git fetch ssh://\$SSH_USER@git.com:29418/ refs/changes/${debug_pre}/${env.debug_patch} && git cherry-pick FETCH_HEAD')
+	}
+}
+
+def init_win() {
+    checkout([
+        $class: 'GitSCM',
+        userRemoteConfigs: [[
+            url: "ssh://gerritgit/xxx"
+        ]],
+        branches: [[name: params.PIPELINE_BRANCH]],
+    ])
+}
