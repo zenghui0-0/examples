@@ -13,3 +13,6 @@
 1, git(branch: "", credentialsId: "", url: "ssh://gerritgit/ec/tool/CI")
 2, def debug_pre = debug_patch.split("/")[0][4..5]
    sh(script: "GIT_SSH_COMMAND='ssh -i \$SSH_KEY -o StrictHostKeyChecking=no' git fetch ssh://\$SSH_USER@gerrit.com:1111/ec/tool/CI refs/changes/${debug_pre}/${debug_patch} && git cherry-pick FETCH_HEAD", returnStdout: true)
+
+[dir]
+returns in dir won't return whole function
