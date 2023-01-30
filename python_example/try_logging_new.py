@@ -6,7 +6,7 @@ import os
 
 
 class Logger:
-    # set log level
+    # 日志级别关系映射
     level_relations = {
         "debug": logging.DEBUG,
         "info": logging.INFO,
@@ -49,24 +49,24 @@ class Logger:
         self.logger.addHandler(self.console)
 
     def addFileHandler(self, file_name=None):
-        # add handler
+        # add new file handler
         new_log_file = os.path.join(self.logger.log_path, file_name)
         new_log_path = os.path.dirname(new_log_file)
         if not os.path.exists(new_log_path):
             try:
                 os.makedirs(new_log_path)
             except Exception as err:
-                print(f'[ERROR] Init case logger failed when create log file: {new_log_path}, error:{err} ')
+                print(f'[ERROR] Failed init case logger when create log file: {new_log_path}, error:{err} ')
                 sys.exit(1)
         new_filelogger = logging.FileHandler(
             new_log_file, mode='a', encoding="UTF-8")
-        # TODO: we can set a diffierent log_level &&formater for this new FileHandle
+        # TODO: we can set a diffierent log_level &&formater for this new FileHandle here
         new_filelogger.setLevel(self.level_relations.get(self.log_level))
         new_filelogger.setFormatter(self.formater)
         self.logger.addHandler(new_filelogger)
 
     def removeFileHandler(self):
-        # will remove handler with stream.fileno > 3
+        # will remove handler with stream.fileno > 3, this means only keep self.filelogger and self.console
         for handler in self.logger.handlers:
             if handler.stream.fileno() > 3:
                 self.logger.removeHandler(handler)
@@ -80,7 +80,7 @@ class Logger:
             try:
                 os.makedirs(log_path)
             except Exception as err:
-                print(f'[ERROR] Init logger failed when create log file: {log_path}, error:{err}')
+                print(f'[ERROR] Failed init logger when create log file: {log_path}, error:{err}')
                 sys.exit(1)
         return log_path
 
