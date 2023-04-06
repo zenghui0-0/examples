@@ -47,13 +47,13 @@ def test_threads_join(td_time, ml_time):
     t_3dmark.start()
     t_memoryleak = MyThread(memory_leak, [ml_time])
     t_memoryleak.start()
-    #ret1 = t_3dmark.join()
-    #ret2 = t_memoryleak.join()
+    ret1 = t_3dmark.join()
+    ret2 = t_memoryleak.join()
     assert False, f'Failed, 3dmark return: {ret1}, memoryleak return: {ret2}'
     print("Test 3dmark, memoryleak PASSED.")
 
 
-def test_threads_faild_beak():
+def test_threads_faild_break():
     """
     3dmark or memoryleak should both end 
     when one of them got failure
@@ -62,7 +62,7 @@ def test_threads_faild_beak():
     pass
 
 
-def test_threads_force_beak():
+def test_threads_force_break():
     """
     fore all test thread end by a signal
     then test case end
