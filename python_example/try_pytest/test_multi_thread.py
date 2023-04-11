@@ -3,6 +3,9 @@ import time
 import pytest
 import random
 import threading
+from  func_timeout import  func_set_timeout, FunctionTimedOut
+
+case_name = os.path.basename(__file__).split(".")[0]
 
 def three_d_mark(run_time):
     print("[os_tests] 3dmark running...")
@@ -52,13 +55,16 @@ def test_threads_join(td_time, ml_time):
     assert False, f'Failed, 3dmark return: {ret1}, memoryleak return: {ret2}'
     print("Test 3dmark, memoryleak PASSED.")
 
-
-def test_threads_faild_break():
+@pytest.mark.parametrize('try_fixture', [case_name], indirect=True)
+@func_set_timeout(2.5)
+def test_threads_faild_break(try_fixture):
     """
     3dmark or memoryleak should both end 
     when one of them got failure
     then test case end
     """
+    print("in test_threads_faild_break.")
+    time.sleep(2)
     pass
 
 
