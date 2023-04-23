@@ -47,7 +47,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'try_django.middleware.loginrequired.LoginRequiredMiddleware',
 ]
+
+OPEN_URLS = ['/devops/', '/webssh/']
 
 ROOT_URLCONF = 'try_django.urls'
 
