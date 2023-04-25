@@ -10,6 +10,7 @@ from .models import Users
 
 # Create your views here.
 class UsersView(GenericAPIView):
+    serializer_class = UserSerializer
 
     def get(self, request):
         queryset = Q()
