@@ -1,2 +1,5 @@
 django==3.2
 sqlite
+djangorestframework==3.14.0
+django-filter==23.1
+drf-yasg==1.21.5
