@@ -18,7 +18,7 @@ from django.conf.urls import url
 from django.urls import path, include, re_path
 # 自定义view
 from users.views import UsersView
-from testreports.views import ReportsView
+from testreports.views import TestReportsView
 # swagger接口文档
 from rest_framework import routers, permissions
 from rest_framework.documentation import include_docs_urls
@@ -40,7 +40,8 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'users/', UsersView.as_view()),
+    url(r'users/(.*)', UsersView.as_view()),
+    url(r'testreports/(.*)', TestReportsView.as_view()),
     # 配置drf-yasg路由
     url(r"docs/", include_docs_urls(title="My API title")),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
