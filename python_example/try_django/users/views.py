@@ -12,7 +12,7 @@ from .models import Users
 class UsersView(GenericAPIView):
     serializer_class = UserSerializer
 
-    def get(self, request):
+    def get(self, request, id):
         queryset = Q()
         if request.GET.get("username"):
             queryset &= Q(username=request.GET.get("username"))
