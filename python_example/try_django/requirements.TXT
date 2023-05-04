@@ -1,6 +1,7 @@
 django==3.2
 sqlite
 pymysql==1.0.3
+mysqlclient==2.1.1
 djangorestframework==3.14.0
 django-filter==23.1
 drf-yasg==1.21.5
