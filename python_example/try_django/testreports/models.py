@@ -42,6 +42,12 @@ class TestCaseRun(models.Model):
     update_time = models.DateTimeField(auto_now=True)
 
 
+class ReportComponent(models.Model):
+
+    component_name = models.CharField(max_length=50, null=True, blank=True)
+    component_value = models.CharField(max_length=100, null=True, blank=True)
+
+
 class TestReports(models.Model):
 
     project_name = models.CharField(max_length=50, null=True, blank=True)
@@ -49,10 +55,12 @@ class TestReports(models.Model):
     run_step = models.IntegerField(default=0, choices=TEST_REPORT_RUN_STEP) # step
     run_status = models.BooleanField(default=True) # True: running, False: finished
     report_type = models.IntegerField(default=0, choices=TEST_REPORT_TYPE)
+    component = models.ManyToManyField(ReportComponent, related_name='testreports', default=None)
     comment = models.CharField(max_length=1024, null=True, blank=True, default=None)
+    requester = models.CharField(max_length=50, null=True, blank=True, default=None)
+    requester_ip = models.CharField(max_length=50, null=True, blank=True, default=None)
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
-
 
 """
 class TestServer(models.Model):

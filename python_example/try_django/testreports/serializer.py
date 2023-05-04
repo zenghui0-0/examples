@@ -7,7 +7,7 @@ class TestReportSimpleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TestReports
-        fields = ['id', 'project_name', 'run_step', 'run_status', 'report_type', 'create_time', 'passrate']
+        fields = ['id', 'project_name', 'run_step', 'run_status', 'report_type', 'component', 'requester', 'requester_ip', 'create_time', 'passrate']
         ordering = ['-create_time']
 
     def get_passrate(self, obj):
