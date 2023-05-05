@@ -54,7 +54,6 @@ class TestReportsView(GenericAPIView):
     def patch(self, request, id):
         request_data = json.loads(request.body)
         report_obj = TestReports.objects.get(id=id)
-        test_servers = TestServer.objects.filter(testserver_record__testreport=id)
         # recording Testing time
         previous_step = report_obj.run_step
         previous_test_end_time = report_obj.test_end_time
@@ -67,11 +66,6 @@ class TestReportsView(GenericAPIView):
         if run_step in [4, 5, 6, 7]:
             if (previous_test_end_time == None):  # skip set end time when already have one
                 request_data["test_end_time"] = datetime.datetime.now()
-            # update test server status to idle
-            if len(test_servers) > 0:
-                for test_server in test_servers:
-                    test_server.status = 0
-                    test_server.save()
         if request_data.get("all_abort"):
             report_obj.test_case_run.all().filter(status__in=[0, 1]).update(status=4)
             #must update the run step to 4
@@ -79,11 +73,6 @@ class TestReportsView(GenericAPIView):
             report_obj.save()
             if (previous_test_end_time == None):  # skip set start time when already have one
                 TestReports.objects.filter(id=id).update(test_end_time=datetime.datetime.now())
-            # update test server status to idle
-            if len(test_servers) > 0:
-                for test_server in test_servers:
-                    test_server.status = 0
-                    test_server.save()
             return Response({"message": "Abort all successfully", "data": request_data}, status=status.HTTP_202_ACCEPTED)
         if request_data.get("components"):
             if report_obj.components:

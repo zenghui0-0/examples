@@ -24,6 +24,12 @@ TEST_CASE_RUN_STATUS = (
     (6, 'regression'),
 )
 
+TEST_CASE_RUN_TYPE = (
+    (0, 'testcase'),
+    (1, 'prepare'),
+    (2, 'post'),
+)
+
 TEST_REPORT_TYPE = (
     (0, 'others'),
     (1, 'pre-submission'),
@@ -37,6 +43,7 @@ class TestCaseRun(models.Model):
     testcase_name = models.CharField(max_length=50, null=True, blank=True)
     status = models.IntegerField(default=0, choices=TEST_CASE_RUN_STATUS)
     result = models.CharField(max_length=64, blank=True, null=True, default=None)
+    testcase_run_type = models.IntegerField(default=0, choices=TEST_CASE_RUN_TYPE)
     comment = models.CharField(max_length=1024, null=True, blank=True, default=None)
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)

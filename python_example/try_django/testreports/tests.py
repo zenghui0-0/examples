@@ -1,5 +1,6 @@
 from django.test import TestCase
 import requests
+import socket
 import json
 import sys
 
@@ -36,7 +37,7 @@ def create_testreport(*args):
     apis = "{0}/testreport/".format(host_name)
     project_name, project_type, jenkins_url, artifactory_url, requester = \
         args[0], args[1], args[2], args[3], args[4]
-    post_data = {"project_name": project_name, "jenkins_url": jenkins_url,
+    post_data = {"project_name": project_name, "jenkins_url": jenkins_url, "requester_ip": requester_ip,
                  "artifactory_url": artifactory_url, "type": TEST_REPORT_TYPE[project_type], "requester": requester}
     res_post = requests.post(url=apis, headers=head,
                         data=json.dumps(post_data), timeout=10)
@@ -130,6 +131,7 @@ def update_component(*args):
 if __name__ == "__main__":
     fun_name = sys.argv[1]
     args = tuple(sys.argv[2:])
+    requester_ip = socket.gethostbyname(socket.gethostname())
     token = "Token 123412354wsdrfqawerqasdtr123235412341234"
     host_name = "http://10.21.16.245:8000/api/v1"
     head = {"Content-Type": "application/json; charset=UTF-8",
