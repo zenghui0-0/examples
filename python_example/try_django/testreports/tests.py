@@ -33,9 +33,6 @@ def get_testreport(*args):
 
 @catch_exception
 def create_testreport(*args):
-    """
-    For catching connection related exceptions from using requests lib
-    """
     apis = "{0}/testreport/".format(host_name)
     project_name, project_type, jenkins_url, artifactory_url, requester = \
         args[0], args[1], args[2], args[3], args[4]
