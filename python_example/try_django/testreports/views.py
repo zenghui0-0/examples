@@ -83,12 +83,6 @@ class TestReportsView(GenericAPIView):
                     else:
                         existed_components[_k] = request_data.get("components").get(_k)
                 request_data["components"] = json.dumps(existed_components)
-        # the method that save benchmark score, follow rule that first come first save
-        # performance data structure:
-        # {
-        #  "windows": [{"name":"benchmark 1", "score":100}, {"name":"benchmark 2", "score":200}],
-        #  "ubuntu": [{"name":"benchmark 3", "score":300}, {"name":"benchmark 4", "score":400}]
-        # }
         if request_data.get("benchmark_score"):
             if not report_obj.comment:
                 report_obj.comment = '{"performance":{}}'
