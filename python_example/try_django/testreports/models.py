@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import Users
+from testservers.models import TestServers
 
 
 # Create your models here.
@@ -25,7 +26,7 @@ TEST_CASE_RUN_STATUS = (
 )
 
 TEST_CASE_RUN_TYPE = (
-    (0, 'testcase'),
+    (0, 'testrun'),
     (1, 'prepare'),
     (2, 'post'),
 )
@@ -45,6 +46,7 @@ class TestCaseRun(models.Model):
     result = models.CharField(max_length=64, blank=True, null=True, default=None)
     testcase_run_type = models.IntegerField(default=0, choices=TEST_CASE_RUN_TYPE)
     comment = models.CharField(max_length=1024, null=True, blank=True, default=None)
+    test_server = models.ForeignKey(TestServers, related_name='testcase_run', on_delete=models.DO_NOTHING, default=None, null=True)
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
 
@@ -66,22 +68,12 @@ class TestReports(models.Model):
     comment = models.CharField(max_length=1024, null=True, blank=True, default=None)
     requester = models.CharField(max_length=50, null=True, blank=True, default=None)
     requester_ip = models.CharField(max_length=50, null=True, blank=True, default=None)
+    test_end_time = models.DateTimeField(null=True, blank=True)
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
 
-"""
-class TestServer(models.Model):
-
-    mac_address = models.CharField(max_length=50, null=True, blank=True)
-    hostname = models.CharField(max_length=100, default=None, null=True, blank=True)
-    jenkins_node = models.CharField(max_length=50, default=None, null=True, blank=True)
-    ip = models.CharField(max_length=100, null=True, blank=True, default=None)
-    ipmi = models.CharField(max_length=50, null=True, blank=True)
-    type = models.IntegerField(default=0, choices=TEST_SERVER_TYPE)
-    machine_info = models.CharField(max_length=1024, null=True, blank=True, default=None)
-    location = models.CharField(max_length=20, null=True, blank=True)
+class TestServerRecord(models.Model):
+    testserver = models.ForeignKey(TestServers, related_name='testserver_record', null=True, on_delete=models.SET_NULL)
+    testreports = models.ForeignKey(TestReports, related_name='testserver_record', on_delete=models.DO_NOTHING)
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
-    usage = models.FloatField(null=True, blank=True, default=0)
-    status = models.IntegerField(default=-1, choices=TEST_SERVER_STATUS)
-"""
