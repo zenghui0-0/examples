@@ -24,7 +24,7 @@ class TestServers(models.Model):
     jenkins_node = models.CharField(max_length=50, default=None, null=True, blank=True)
     ip = models.GenericIPAddressField(protocol="ipv4", null=True, blank=True, default=None)
     ipmi = models.CharField(max_length=50, null=True, blank=True)
-    type = models.IntegerField(default=0, choices=TEST_SERVER_TYPE)
+    server_type = models.IntegerField(default=0, choices=TEST_SERVER_TYPE)
     machine_info = models.CharField(max_length=1024, null=True, blank=True, default=None)
     location = models.CharField(max_length=20, null=True, blank=True)
     create_time = models.DateTimeField(auto_now_add=True)
