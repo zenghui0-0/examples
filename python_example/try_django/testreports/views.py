@@ -170,7 +170,7 @@ class TestReportDetailView(GenericAPIView):
             _none_server_testcaserun_obj = testreport_obj.test_case_run.all().filter(test_server=None, testcase__name=request_data.get("testcase"), asic=request_data.get("update_data").get("asic"), status=0)
             if len(_none_server_testcaserun_obj) != 0:
                 test_case_run_obj = _none_server_testcaserun_obj[0]
-                test_case_run_obj.test_server = TestServer.objects.get(hostname=request_data.get("testserver"))
+                test_case_run_obj.test_server = TestServers.objects.get(hostname=request_data.get("testserver"))
                 test_case_run_obj.create_time = datetime.datetime.now()
                 test_case_run_obj.save()
                 testreport_obj.test_case_run.all().filter(id=test_case_run_obj.id).update(**request_data["update_data"])
