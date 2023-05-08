@@ -117,7 +117,9 @@ class TestReportDetailView(GenericAPIView):
     serializer_class = TestReportDetailSerializer
 
     def get(self, request, id):
-        queryset = Q(id=id)
+        queryset = Q()
+        if request.GET.get("id"):
+            queryset &= Q(id=request.GET.get("id"))
         obj_report = TestReports.objects.get(queryset)
         objs_case = obj_report.test_case_run.all()
         # num_objs_case = objs_case.values_list("testcase__name", flat=True).distinct()
