@@ -33,10 +33,11 @@ TEST_CASE_RUN_TYPE = (
 
 TEST_REPORT_TYPE = (
     (0, 'others'),
-    (1, 'pre-submission'),
+    (1, 'presubmission'),
     (2, 'daily'),
     (3, 'weekly'),
     (4, 'release'),
+    (5, 'manually'),
 )
 
 class TestCaseRun(models.Model):
@@ -44,6 +45,7 @@ class TestCaseRun(models.Model):
     testcase_name = models.CharField(max_length=50, null=True, blank=True)
     status = models.IntegerField(default=0, choices=TEST_CASE_RUN_STATUS)
     result = models.CharField(max_length=64, blank=True, null=True, default=None)
+    test_run_url = models.CharField(max_length=255, null=True, default=None)
     testcase_run_type = models.IntegerField(default=0, choices=TEST_CASE_RUN_TYPE)
     comment = models.CharField(max_length=1024, null=True, blank=True, default=None)
     test_server = models.ForeignKey(TestServers, related_name='testcase_run', on_delete=models.DO_NOTHING, default=None, null=True)
@@ -65,12 +67,15 @@ class TestReports(models.Model):
     run_status = models.BooleanField(default=True) # True: running, False: finished
     report_type = models.IntegerField(default=0, choices=TEST_REPORT_TYPE)
     component = models.ManyToManyField(ReportComponent, related_name='testreports', default=None)
+    test_report_url = models.CharField(max_length=256, null=True, blank=True)
+    artifactory_url = models.CharField(max_length=1024, null=True, blank=True)
     comment = models.CharField(max_length=1024, null=True, blank=True, default=None)
     requester = models.CharField(max_length=50, null=True, blank=True, default=None)
     requester_ip = models.CharField(max_length=50, null=True, blank=True, default=None)
     test_end_time = models.DateTimeField(null=True, blank=True)
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
+
 
 class TestServerRecord(models.Model):
     testserver = models.ForeignKey(TestServers, related_name='testserver_record', null=True, on_delete=models.SET_NULL)
