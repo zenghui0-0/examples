@@ -45,7 +45,8 @@ class TestCaseRun(models.Model):
     testcase_name = models.CharField(max_length=50, null=True, blank=True)
     status = models.IntegerField(default=0, choices=TEST_CASE_RUN_STATUS)
     result = models.CharField(max_length=64, blank=True, null=True, default=None)
-    test_run_url = models.CharField(max_length=255, null=True, default=None)
+    detail_url = models.CharField(max_length=255, null=True, default=None)
+    detail_file = models.FileField(upload_to='test_case_run/', blank=False, max_length=5000)
     testcase_run_type = models.IntegerField(default=0, choices=TEST_CASE_RUN_TYPE)
     comment = models.CharField(max_length=1024, null=True, blank=True, default=None)
     test_server = models.ForeignKey(TestServers, related_name='testcase_run', on_delete=models.DO_NOTHING, default=None, null=True)
@@ -57,6 +58,8 @@ class ReportComponent(models.Model):
 
     component_name = models.CharField(max_length=50, null=True, blank=True)
     component_value = models.CharField(max_length=100, null=True, blank=True)
+    create_time = models.DateTimeField(auto_now_add=True)
+    update_time = models.DateTimeField(auto_now=True)
 
 
 class TestReports(models.Model):
@@ -77,8 +80,3 @@ class TestReports(models.Model):
     update_time = models.DateTimeField(auto_now=True)
 
 
-class TestServerRecord(models.Model):
-    testserver = models.ForeignKey(TestServers, related_name='testserver_record', null=True, on_delete=models.SET_NULL)
-    testreports = models.ForeignKey(TestReports, related_name='testserver_record', on_delete=models.DO_NOTHING)
-    create_time = models.DateTimeField(auto_now_add=True)
-    update_time = models.DateTimeField(auto_now=True)
