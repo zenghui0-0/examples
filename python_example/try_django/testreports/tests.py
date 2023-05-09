@@ -13,6 +13,12 @@ TEST_REPORT_TYPE = (
     (4, 'release'),
 )
 
+TEST_CASE_RUN_TYPE = (
+    (0, 'testrun'),
+    (1, 'prepare'),
+    (2, 'post'),
+)
+
 def catch_exception(func):
     def wrapper(*args, **kwargs):
         try:
@@ -62,12 +68,12 @@ def update_testreport_step(*args):
 
 @catch_exception
 def init_testcaselist(*args):
-    report_id, test_case_list, asic, os_, hypervisor, guest_type = \
-        args[0], args[1], args[2], args[3], args[4], args[5]
+    report_id, test_case_list, gpu_type, server_os = \
+        args[0], args[1], args[2], args[3]
     apis = "{0}/testreportDetail/{1}".format(host_name, report_id)
     test_case_list = json.loads(test_case_list)
     post_data = {"test_case_list": test_case_list, "status": 0, "init": True,
-                 "asic": asic, "os": os_, "guest_type": guest_type, "hypervisor": hypervisor}
+                 "gpu_type": gpu_type, "server_os": server_os}
     print("post_data in init_testcaselist:{0}".format(post_data))
     res = requests.post(url=apis, headers=head,
                         data=json.dumps(post_data), timeout=5)
@@ -76,12 +82,12 @@ def init_testcaselist(*args):
 
 @catch_exception
 def update_testcase_run_status(*args):
-    report_id, testcasename, status, node_name, servername, asic, os_, hypervisor, guest_type = \
-        args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]
+    report_id, testcasename, status, jenkins_node, serverip, server_os = \
+        args[0], args[1], args[2], args[3], args[4], args[5]
     apis = "{0}/testreportDetail/{1}".format(host_name, report_id)
-    update_data = {"status": status, "asic": asic, "os": os_,
+    update_data = {"status": status, "server_os": server_os,
                    "guest_type": guest_type, "hypervisor": hypervisor}
-    post_data = {"node_name": node_name, "testserver": servername,
+    post_data = {"jenkins_node": jenkins_node, "serverip": serverip,
                  "testcase": testcasename, "update_data": update_data}
     print("post_data in update_testcase_run_status:{0}".format(post_data))
     res = requests.patch(url=apis, headers=head,
@@ -91,14 +97,13 @@ def update_testcase_run_status(*args):
 
 @catch_exception
 def update_testcase_report(*args):
-    report_id, testcase_name, node_name, servername, report_url, detail_url, asic, os_, hypervisor, guest_type = \
-        args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9]
+    report_id, testcase_name, node_name, servername, serverip, detail_url = \
+        args[0], args[1], args[2], args[3], args[4], args[5]
     if detail_url == '""':
         detail_url = None
     apis = "{0}/testreportDetail/{1}".format(host_name, report_id)
-    update_data = {"test_report_url": report_url, "detail_url": detail_url,
-                   "asic": asic, "os": os_, "guest_type": guest_type}
-    post_data = {"node_name": node_name, "testserver": servername,
+    update_data = {"detail_url": detail_url}
+    post_data = {"node_name": node_name, "servername": servername, "serverip": serverip,
                  "testcase": testcase_name, "update_data": update_data}
     print("post_data in update_testcase_report:{0}".format(post_data))
     res = requests.patch(url=apis, headers=head,
@@ -118,9 +123,9 @@ def update_all_case_abort(*args):
 
 @catch_exception
 def update_component(*args):
-    report_id, servername, component = args[0], args[1], args[2]
+    report_id, component_name, component_value = args[0], args[1], args[2]
     apis = "{0}/testreport/{1}".format(host_name, report_id)
-    post_data = {"components": {servername: component}}
+    post_data = {"components": {component_name: component_value}}
     print("post_data in update_component:{0}".format(post_data))
     res = requests.patch(url=apis, headers=head,
                          data=json.dumps(post_data), timeout=5)
@@ -133,7 +138,7 @@ if __name__ == "__main__":
     args = tuple(sys.argv[2:])
     requester_ip = socket.gethostbyname(socket.gethostname())
     token = "Token 123412354wsdrfqawerqasdtr123235412341234"
-    host_name = "http://10.21.16.245:8000/api/v1"
+    host_name = "http://10.21.16.445:8000"
     head = {"Content-Type": "application/json; charset=UTF-8",
             "Authorization": token}
     globals().get(fun_name)(*args)
