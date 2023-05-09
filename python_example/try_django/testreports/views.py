@@ -27,10 +27,11 @@ class TestReportsView(GenericAPIView):
         if request.GET.get("project_name"):
             if request.GET.get("project_name") == "all":
                 queryset = Q()
-            elif request.GET.get("project_name") == "presubmission":
-                queryset &= Q(type=1)
             else:
-                queryset &= Q(project_name__icontains=request.GET.get('project_name')) & ~Q(type=1)
+                queryset &= Q(project_name__icontains=request.GET.get('project_name'))
+        if request.GET.get('report_type'):
+            queryset &= Q(report_type=request.GET.get('report_type'))
+
         if request.GET.get('type'):
             queryset &= Q(report_type=request.GET.get('type'))
         project_list = TestReports.objects.values_list("project_name", flat=True).distinct()
@@ -55,57 +56,41 @@ class TestReportsView(GenericAPIView):
 
     def patch(self, request, id):
         request_data = json.loads(request.body)
-        report_obj = TestReports.objects.get(id=id)
+        testreport_obj = TestReports.objects.get(id=id)
         # recording Testing time
-        previous_step = report_obj.run_step
-        previous_test_end_time = report_obj.test_end_time
+        previous_step = testreport_obj.run_step
+        previous_test_end_time = testreport_obj.test_end_time
         # try to get run step and turn it to a int
         run_step = -1
         try:
-            run_step = int(request_data.get("run_step"))
+            run_step = int(request_data.get("run_step", -1))
         except Exception as e:
+            del request_data["run_step"]
             print("Run step should be int or strings format int.")
         if run_step in [4, 5, 6, 7]:
             if (previous_test_end_time == None):  # skip set end time when already have one
                 request_data["test_end_time"] = datetime.datetime.now()
         if request_data.get("all_abort"):
-            report_obj.test_case_run.all().filter(status__in=[0, 1]).update(status=4)
+            testreport_obj.test_case_run.all().filter(status__in=[0, 1]).update(status=4)
             #must update the run step to 4
-            report_obj.run_step = 4
-            report_obj.save()
+            testreport_obj.run_step = 4
+            testreport_obj.save()
             if (previous_test_end_time == None):  # skip set start time when already have one
                 TestReports.objects.filter(id=id).update(test_end_time=datetime.datetime.now())
             return Response({"message": "Abort all successfully", "data": request_data}, status=status.HTTP_202_ACCEPTED)
-        if request_data.get("components"):
-            if report_obj.components:
-                existed_components = json.loads(report_obj.components.replace("'", "\""))
-                for _k in request_data.get("components").keys():
-                    if _k in existed_components:
-                        existed_components[_k] = existed_components[_k] + ";"+request_data.get("components").get(_k)
-                    else:
-                        existed_components[_k] = request_data.get("components").get(_k)
-                request_data["components"] = json.dumps(existed_components)
-        if request_data.get("benchmark_score"):
-            if not report_obj.comment:
-                report_obj.comment = '{"performance":{}}'
-            origin_data = json.loads(report_obj.comment)
-            if not origin_data.get("performance"):
-                origin_data["performance"] = {}
-            performance_data = origin_data.get("performance")
-            for _item in request_data.get("benchmark_score"):
-                if _item["guest_os"] not in performance_data.keys():
-                    performance_data[_item["guest_os"]] = []
-                benchmark_list = [item["name"] for item in performance_data[_item["guest_os"]]]
-                if _item["name"] not in benchmark_list:
-                    performance_data[_item["guest_os"]].append({"name": _item["name"], "score": int(_item["avg_score"])})
-            origin_data["performance"] = performance_data
-            report_obj.comment = json.dumps(origin_data)
-            report_obj.save()
-            return Response({"message": "update successfully", "data": request_data}, status=status.HTTP_201_CREATED)
+        # update components
+        components = request_data.get("components", {})
+        try:
+            for component in components.items():
+                new_report_component.component_name = component[0]
+                new_report_component.component_value = component[1]
+                new_report_component = ReportComponent.objects.create(component_name=component[0], component_value=component[1])
+                testreport_obj.component.add(new_report_component)
+        except Exception:
+            print('Error: failed to update components')
         TestReports.objects.filter(id=id).update(**request_data)
         return Response({"message": "update successfully", "data": request_data}, status=status.HTTP_201_CREATED)
 
-    @method_decorator(permission_required('testreport.delete_testreport', raise_exception=True))
     def delete(self, request, id):
         post_data = json.loads(request.body)
         obj = TestReports.objects.get(id=post_data['id'])
@@ -141,10 +126,10 @@ class TestReportDetailView(GenericAPIView):
             if old_test_case_run:
                 old_test_case_run.update(**request_data)
                 return Response({"message": "Update old record Success", "data": old_test_case_run.data}, status=status.HTTP_201_CREATED)
-        if not(TestServers.objects.filter(hostname=request_data.get("test_server"))):
-            testserver_obj = TestServers.objects.create(hostname=request_data.get("test_server"))
+        if not(TestServers.objects.filter(ip=request_data.get("serverip"))):
+            testserver_obj = TestServers.objects.create(ip=request_data.get("serverip"))
         else:
-            testserver_obj = TestServers.objects.get(hostname=request_data.get("test_server"))
+            testserver_obj = TestServers.objects.get(ip=request_data.get("serverip"))
         new_test_case_run = TestCaseRun.objects.create(status=request_data['status'], test_server_id=testserver_obj.id,
                                                        comment=request_comment)
         testreport_obj.test_case_run.add(new_test_case_run)
@@ -161,22 +146,22 @@ class TestReportDetailView(GenericAPIView):
             previous_testreport_obj = testreport_list[1]
             flag_previous_tesreport = True
         if request_data.get("updateComment"):
-            #did not wish update_time tobe changed by update comments
+            # did not wish update_time tobe changed by update comments, id becomes testcaserun id
             testcaserun_obj = TestCaseRun.objects.filter(id=request_data.get('id'))
-            if len(testcaserun_obj) >0 :
+            if len(testcaserun_obj) > 0 :
                 testcaserun_obj.update(comment=request_data["comment"])
         else:
             # Because create TestCaseRun with None server in init, so if get test_server=None, need to update it first
             _none_server_testcaserun_obj = testreport_obj.test_case_run.all().filter(test_server=None, testcase__name=request_data.get("testcase"), asic=request_data.get("update_data").get("asic"), status=0)
             if len(_none_server_testcaserun_obj) != 0:
                 test_case_run_obj = _none_server_testcaserun_obj[0]
-                test_case_run_obj.test_server = TestServers.objects.get(hostname=request_data.get("testserver"))
+                test_case_run_obj.test_server = TestServers.objects.get(ip=request_data.get("serverip"))
                 test_case_run_obj.create_time = datetime.datetime.now()
                 test_case_run_obj.save()
                 testreport_obj.test_case_run.all().filter(id=test_case_run_obj.id).update(**request_data["update_data"])
             else:
                 # filter server and case and asic, if exist, update it. if not, create
-                _testcaserun_obj = testreport_obj.test_case_run.all().filter(test_server__hostname=request_data.get("testserver"))
+                _testcaserun_obj = testreport_obj.test_case_run.all().filter(test_server__ip=request_data.get("serverip"))
                 if len(_testcaserun_obj) >= 1:
                     if request_data.get("update_data") and request_data.get("update_data").get("status") and int(request_data.get("update_data").get("status")) == 3:
                         # determine if this is regression
@@ -186,7 +171,7 @@ class TestReportDetailView(GenericAPIView):
                                 request_data["update_data"]["status"] = 6
                     _testcaserun_obj.update(**request_data["update_data"])
                 else:
-                    _server_obj = TestServers.objects.get(hostname=request_data.get("testserver"))
+                    _server_obj = TestServers.objects.get(ip=request_data.get("serverip"))
                     _new_testcaserun_obj = TestCaseRun.objects.create(test_server_id=_server_obj.id, **request_data["update_data"])
                     testreport_obj.test_case_run.add(_new_testcaserun_obj)
         return Response({"message": "Update Success", "data": request_data}, status=status.HTTP_200_OK)
