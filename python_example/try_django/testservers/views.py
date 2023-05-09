@@ -5,7 +5,7 @@ from rest_framework import status
 from django.db.models import Q
 from utils.tools import page_paginator
 from .models import TestServers
-from testreports.models import TestReports, TestServerRecord
+from testreports.models import TestReports
 from .serializer import TestServerSerializer
 import datetime
 import json
@@ -25,8 +25,10 @@ class TestServerListView(GenericAPIView):
             queryset &= Q(hostname__icontains=request.GET.get('name'))
         if request.GET.get("hostname"):
             queryset &= Q(hostname__icontains=request.GET.get('hostname'))
-        if request.GET.get('type'):
-            queryset &= Q(type=request.GET.get('type'))
+        if request.GET.get('server_type'):
+            queryset &= Q(server_type=request.GET.get('server_type'))
+        if request.GET.get("server_ip"):
+            queryset &= Q(ip=request.GET.get('server_ip'))
         if request.GET.get('jenkins_node'):
             queryset &= Q(jenkins_node=request.GET.get('jenkins_node'))
         objs = TestServers.objects.filter(queryset).order_by('-update_time')
@@ -57,9 +59,6 @@ class TestServerListView(GenericAPIView):
             if (previous_test_start_time == None):  # skip set start time when already have one
                 report_obj.test_start_time = datetime.datetime.now()
                 report_obj.save()
-            testserverRecords = TestServerRecord.objects.filter(testreport_id=report_id, testserver_id=testserver_id)
-            if len(testserverRecords) == 0:
-                TestServerRecord.objects.create(testreport_id=report_id, testserver_id=testserver_id)
         if serializer.is_valid():
             return Response({'data': serializer.data}, status=status.HTTP_201_CREATED)
         else:
