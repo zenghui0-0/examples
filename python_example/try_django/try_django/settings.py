@@ -45,6 +45,7 @@ USER_APPS = [
     'users',
     'testreports',
     'testservers',
+    'testcases',
 ]
 
 INSTALLED_APPS = BASE_APPS + USER_APPS

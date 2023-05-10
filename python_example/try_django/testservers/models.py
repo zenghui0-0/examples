@@ -16,9 +16,7 @@ TEST_SERVER_TYPE = (
 
 
 class TestServers(models.Model):
-    """
-    Server information.
-    """
+
     mac_address = models.CharField(max_length=50, null=True, blank=True)
     hostname = models.CharField(max_length=100, default=None, null=True, blank=True)
     jenkins_node = models.CharField(max_length=50, default=None, null=True, blank=True)
