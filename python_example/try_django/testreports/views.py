@@ -84,8 +84,7 @@ class TestReportsView(GenericAPIView):
             for component in components.items():
                 new_report_component.component_name = component[0]
                 new_report_component.component_value = component[1]
-                new_report_component = ReportComponent.objects.create(component_name=component[0], component_value=component[1])
-                testreport_obj.component.add(new_report_component)
+                new_report_component = ReportComponent.objects.create(component_name=component[0], component_value=component[1], test_report_id=id)
         except Exception:
             print('Error: failed to update components')
         TestReports.objects.filter(id=id).update(**request_data)
