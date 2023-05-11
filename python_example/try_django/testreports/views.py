@@ -9,7 +9,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import permission_required
 from django.views.decorators.csrf import csrf_exempt
 from utils.tools import page_paginator
-from .models import TestReports, TestCaseRun
+from .models import TestReports, TestCaseRun, ReportComponent
 from testservers.models import TestServers
 from users.models import Users
 import datetime
@@ -105,8 +105,7 @@ class TestReportDetailView(GenericAPIView):
         if request.GET.get("id"):
             queryset &= Q(id=request.GET.get("id"))
         obj_report = TestReports.objects.get(queryset)
-        objs_case = obj_report.test_case_run.all()
-        # num_objs_case = objs_case.values_list("testcase__name", flat=True).distinct()
+        objs_case = TestCaseRun.objects.filter(test_report_id=id)
         report_data = TestReportDetailSerializer(obj_report)
         return Response({
             'data': report_data.data,
@@ -178,3 +177,17 @@ class TestReportDetailView(GenericAPIView):
     def delete(self, request, id):
         return Response({"message": "Delete Successfully"}, status=status.HTTP_200_OK)
 
+
+def try_get_id(request, id):
+    # first we try to get id from request, when failed, try to turn id to int
+    new_id = request.GET.get("id", None)
+    try:
+        new_id = int(new_id)
+    except Exception as request_id_err:
+        print(f"failed to get an int id from request, error: {request_id_err}.")
+        try:
+            new_id = int(id)
+        except Exception as id_err:
+            new_id = None
+            print(f"failed to turn id to int, error: {id_err}.")
+    return new_id

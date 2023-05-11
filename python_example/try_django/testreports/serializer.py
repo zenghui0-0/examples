@@ -31,7 +31,7 @@ class TestReportsSerializer(serializers.ModelSerializer):
         if test_case_run.count() > 0:
             return int(len([item for item in test_case_run if item.status == 2]) / obj.test_case_run.all().count() * 100)
         else:
-            return ''
+            return 0
 
 
 class TestReportDetailSerializer(TestReportsSerializer):
@@ -45,9 +45,9 @@ class TestReportDetailSerializer(TestReportsSerializer):
 
     def get_components(self, obj):
         report_components = ReportComponent.objects.filter(test_report_id=obj.id)
-        data = {}
+        data = []
         for report_component in report_components:
-            data.update({report_component.component_name, report_component.component_value})
+            data.append({report_component.component_name: report_component.component_value})
         return data
 
     def get_matrix_data(self, obj):
