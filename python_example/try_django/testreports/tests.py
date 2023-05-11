@@ -132,6 +132,9 @@ def update_component(*args):
     print("status_code:{0}".format(res.status_code))
 
 
+def some_sql():
+    # insert into testreports_reportcomponent(component_name, component_value, test_report_id, create_time, update_time) values("repo_a", "adfasdfa", 1, NOW(), NOW());
+    pass
 
 if __name__ == "__main__":
     fun_name = sys.argv[1]
