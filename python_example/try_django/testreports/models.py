@@ -62,6 +62,7 @@ class TestCaseRun(models.Model):
     status = models.IntegerField(default=0, choices=TEST_CASE_RUN_STATUS)
     host_os = models.CharField(max_length=50, blank=True, null=True, default=None)
     guest_os = models.CharField(max_length=50, blank=True, null=True, default=None)
+    gpu_info = models.CharField(max_length=50, null=True, blank=True, default=None)
     result = models.CharField(max_length=64, blank=True, null=True, default=None)
     detail_url = models.CharField(max_length=255, null=True, default=None)
     detail_file = models.FileField(upload_to='test_case_run/', blank=False, max_length=5000)
