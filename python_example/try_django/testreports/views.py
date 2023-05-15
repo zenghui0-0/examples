@@ -102,16 +102,18 @@ class TestReportDetailView(GenericAPIView):
 
     def get(self, request, id):
         queryset = Q()
-        if request.GET.get("id"):
-            queryset &= Q(id=request.GET.get("id"))
+        report_id = try_get_id(request, id)
+        if report_id is None:
+            return Response({"message": "Failed: No report id.", "data": {},
+                             'status': status.HTTP_404_NOT_FOUND})
+        queryset &= Q(id=report_id)
         obj_report = TestReports.objects.get(queryset)
-        objs_case = TestCaseRun.objects.filter(test_report_id=id)
         report_data = TestReportDetailSerializer(obj_report)
         return Response({
             'data': report_data.data,
-            'total': len(objs_case),
             'status': status.HTTP_200_OK,
         }, status=status.HTTP_200_OK)
+
 
     def post(self, request, id):
         request_data = json.loads(request.body)
