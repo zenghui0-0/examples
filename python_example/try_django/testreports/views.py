@@ -161,12 +161,14 @@ class TestReportDetailView(GenericAPIView):
                 # filter server and case and asic, if exist, update it. if not, create
                 _testcaserun_obj = testreport_obj.test_case_run.all().filter(test_server__ip=request_data.get("serverip"))
                 if len(_testcaserun_obj) >= 1:
+                    """
                     if request_data.get("update_data") and request_data.get("update_data").get("status") and int(request_data.get("update_data").get("status")) == 3:
                         # determine if this is regression
                         if flag_previous_tesreport:
                             previous_testcase_obj = previous_testreport_obj.test_case_run.all().filter(testcase_id=_testcaserun_obj[0].testcase_id, asic=_testcaserun_obj[0].asic)
                             if len(previous_testcase_obj) == 1 and previous_testcase_obj[0].status == 2:
                                 request_data["update_data"]["status"] = 6
+                    """
                     _testcaserun_obj.update(**request_data["update_data"])
                 else:
                     _server_obj = TestServers.objects.get(ip=request_data.get("serverip"))
