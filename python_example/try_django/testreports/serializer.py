@@ -8,7 +8,7 @@ import json
 
 
 class TestCaseRunSerializer(serializers.ModelSerializer):
-    test_server = TestServerSerializer(read_only=True)
+    test_server = TestServerSerializer(read_only=True, many=True)
 
     class Meta:
         model = TestCaseRun
@@ -21,7 +21,6 @@ class ReportComponentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class TestReportsSerializer(serializers.ModelSerializer):
-    test_case_run = TestCaseRunSerializer(read_only=True, many=False)
     passrate = serializers.SerializerMethodField()
 
     class Meta:
@@ -29,7 +28,7 @@ class TestReportsSerializer(serializers.ModelSerializer):
         fields = ['id', 'project_name', 'run_step', 'run_status',
                   'report_type', 'test_report_url', 'artifactory_url',
                   'comment', 'requester', 'requester_ip',
-                  'test_end_time', 'create_time', 'passrate', 'test_case_run']
+                  'test_end_time', 'create_time', 'passrate']
         ordering = ['-create_time']
 
     def get_passrate(self, obj):
@@ -41,22 +40,15 @@ class TestReportsSerializer(serializers.ModelSerializer):
 
 
 class TestReportDetailSerializer(TestReportsSerializer):
-    test_case_run = TestCaseRunSerializer(read_only=True, many=True)
+    testcase_run = TestCaseRunSerializer(read_only=True, many=True)
+    report_component = ReportComponentSerializer(read_only=True, many=True)
     matrix_data = serializers.SerializerMethodField()
-    components_list = ReportComponentSerializer(read_only=True, many=True)
 
     class Meta:
         model = TestReports
-        fields = ['components_list', 'matrix_data', 'test_case_run', 'create_time']
+        fields = ['report_component', 'passrate', 'matrix_data', 'testcase_run', 'create_time']
         ordering = ['-create_time']
-    """
-    def get_components(self, obj):
-        report_components = ReportComponent.objects.filter(test_report_id=obj.id)
-        data = []
-        for report_component in report_components:
-            data.append({report_component.component_name: report_component.component_value})
-        return data
-    """
+
     def get_matrix_data(self, obj):
         new_matrix_data = {"AllTestDone":True}
         return new_matrix_data
