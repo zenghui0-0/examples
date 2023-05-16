@@ -22,8 +22,9 @@ class TestReportsView(GenericAPIView):
 
     def get(self, request, id):
         queryset = Q()
-        if request.GET.get("id"):
-            queryset &= Q(id=request.GET.get("id"))
+        report_id = try_get_id(request, id)
+        if report_id is not None:
+            queryset &= Q(id=report_id)
         if request.GET.get("project_name"):
             if request.GET.get("project_name") == "all":
                 queryset = Q()
