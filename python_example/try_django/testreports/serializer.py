@@ -13,12 +13,14 @@ class TestCaseRunSerializer(serializers.ModelSerializer):
     class Meta:
         model = TestCaseRun
         fields = '__all__'
+        ordering = ['-create_time']
 
 class ReportComponentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReportComponent
-        fields = '__all__'
+        fields = ['component_name', 'component_value']
+        ordering = ['-create_time']
 
 class TestReportsSerializer(serializers.ModelSerializer):
     passrate = serializers.SerializerMethodField()
