@@ -1,6 +1,7 @@
 from pynput import keyboard
 from pynput import mouse
 import pyautogui
+import itertools
 import time
 import sys
 
@@ -19,6 +20,7 @@ def matrix_click(x,y):
     y_list = gen_list(y, height, d_height)
     print(x_list)
     print(y_list)
+    print(list(itertools.product(x_list, y_list)))
 
 def on_press(key):
     """定义按下时候的响应，参数传入key"""
@@ -63,9 +65,9 @@ if __name__ == '__main__':
     print(f"屏幕分辨率： {width} x {height}")
     print(f"等分成： {n_width} x {n_height} 份")
     print(f"每份宽 x 高： {d_width} x {d_height}")
-    print(f"原始点击位置： (200, 100)")
+    print(f"原始点击位置： (800, 500)")
     print("其他相似点：")
-    matrix_click(200, 100)
+    matrix_click(800, 500)
     sys.exit(0)
     listen_mouse_nblock()
     listen_key_nblock()
