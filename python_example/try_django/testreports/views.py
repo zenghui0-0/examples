@@ -45,10 +45,11 @@ class TestReportsView(GenericAPIView):
             'status': status.HTTP_200_OK,
         }, status=status.HTTP_200_OK)
 
-    @csrf_exempt
     def post(self, request, id):
-        post_data = request.POST.dict()
+        print(id)
+        post_data = json.loads(request.body)
         print(post_data)
+        # return Response({})
         # del post_data['csrfmiddlewaretoken']
         serializer = TestReportsSerializer(data=post_data)
         serializer.is_valid(raise_exception=True)
