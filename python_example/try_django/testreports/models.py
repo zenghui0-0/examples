@@ -24,6 +24,7 @@ TEST_CASE_RUN_STATUS = (
     (4, 'abort'),
     (5, 'timeout'),
     (6, 'regression'),
+    (7, 'skiped'),
 )
 
 TEST_CASE_RUN_TYPE = (
@@ -65,7 +66,7 @@ class TestCaseRun(models.Model):
     gpu_info = models.CharField(max_length=50, null=True, blank=True, default=None)
     result = models.CharField(max_length=64, blank=True, null=True, default=None)
     detail_url = models.CharField(max_length=255, null=True, default=None)
-    detail_file = models.FileField(upload_to='test_case_run/', blank=False, max_length=5000)
+    detail_file = models.FileField(upload_to='test_case_run/', blank=True, max_length=5000)
     testcase_run_type = models.IntegerField(default=0, choices=TEST_CASE_RUN_TYPE)
     comment = models.CharField(max_length=1024, null=True, blank=True, default=None)
     test_server = models.ForeignKey(TestServers, related_name='testcase_run', on_delete=models.SET_DEFAULT, default=None, null=True)
@@ -82,8 +83,3 @@ class ReportComponent(models.Model):
     test_report = models.ForeignKey(TestReports, related_name='report_component', on_delete=models.CASCADE, default=None, null=True)
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
-
-
-
-
-
