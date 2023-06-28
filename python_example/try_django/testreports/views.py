@@ -4,11 +4,14 @@ from django.db.models import Q
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
-from .serializer import TestReportsSerializer, TestReportDetailSerializer, TestCaseRunSerializer
+from rest_framework.decorators import action
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
+from .serializer import TestReportsSerializer, ReportComponentSerializer, TestReportDetailSerializer, TestCaseRunSerializer
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import permission_required
 from django.views.decorators.csrf import csrf_exempt
-from utils.tools import page_paginator
+from utils.tools import MyPage, page_paginator, get_parameter_dic
 from .models import TestReports, TestCaseRun, ReportComponent
 from testservers.models import TestServers
 from users.models import Users
@@ -17,24 +20,31 @@ import json
 
 
 # Create your views here.
-class TestReportsView(GenericAPIView):
+class TestReportsView(viewsets.ModelViewSet):
+    queryset = TestReports.objects.all()
     serializer_class = TestReportsSerializer
+    pagination_class = MyPage # ??
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter] # ??
+    filterset_fields = ('id', 'project_name', 'report_type') # django_filters
+    search_fields = ('id', 'project_name', 'report_type') # ??
+    ordering_fields = ('id', 'create_time') # ??
+    ordering = ['-create_time'] # ??
 
-    def get(self, request, id):
+    """
+    def list_(self, request, *args, **kwargs):
+        params = get_parameter_dic(request)
+        print(f"in list params is: {params}")
         queryset = Q()
-        report_id = try_get_id(request, id)
+        report_id = params.get('id', None)
         if report_id is not None:
             queryset &= Q(id=report_id)
-        if request.GET.get("project_name"):
-            if request.GET.get("project_name") == "all":
+        if params.get("project_name"):
+            if params.get("project_name") == "all":
                 queryset = Q()
             else:
-                queryset &= Q(project_name__icontains=request.GET.get('project_name'))
-        if request.GET.get('report_type'):
-            queryset &= Q(report_type=request.GET.get('report_type'))
-
-        if request.GET.get('type'):
-            queryset &= Q(report_type=request.GET.get('type'))
+                queryset &= Q(project_name__icontains=params.get('project_name'))
+        if params.get('report_type'):
+            queryset &= Q(report_type=params.get('report_type'))
         project_list = TestReports.objects.values_list("project_name", flat=True).distinct()
         objs = TestReports.objects.filter(queryset).order_by('-create_time')
         paginator_objs = page_paginator(request, objs)
@@ -44,21 +54,18 @@ class TestReportsView(GenericAPIView):
             'total': objs.count(),
             'status': status.HTTP_200_OK,
         }, status=status.HTTP_200_OK)
+    """
 
-    def post(self, request, id):
-        print(id)
-        post_data = json.loads(request.body)
-        print(post_data)
-        # return Response({})
-        # del post_data['csrfmiddlewaretoken']
-        serializer = TestReportsSerializer(data=post_data)
+    def create(self, request, *args, **kwargs):
+        request_data = json.loads(request.body)
+        serializer = TestReportsSerializer(data=request_data)
         serializer.is_valid(raise_exception=True)
-        obj = TestReports.objects.create(**post_data)
+        obj = TestReports.objects.create(**request_data)
         return Response(status=status.HTTP_201_CREATED, data={"message": "create successfully", "data": TestReportsSerializer(obj).data, "status": status.HTTP_201_CREATED})
 
-    def patch(self, request, id):
+    def update(self, request, *args, **kwargs):
         request_data = json.loads(request.body)
-        testreport_obj = TestReports.objects.get(id=id)
+        testreport_obj = self.get_object() # TestReports object (id)
         # recording Testing time
         previous_step = testreport_obj.run_step
         previous_test_end_time = testreport_obj.test_end_time
@@ -72,58 +79,48 @@ class TestReportsView(GenericAPIView):
         if run_step in [4, 5, 6, 7]:
             if (previous_test_end_time == None):  # skip set end time when already have one
                 request_data["test_end_time"] = datetime.datetime.now()
-        if request_data.get("all_abort"):
-            testreport_obj.test_case_run.all().filter(status__in=[0, 1]).update(status=4)
-            #must update the run step to 4
-            testreport_obj.run_step = 4
-            testreport_obj.save()
-            if (previous_test_end_time == None):  # skip set start time when already have one
-                TestReports.objects.filter(id=id).update(test_end_time=datetime.datetime.now())
-            return Response({"message": "Abort all successfully", "data": request_data}, status=status.HTTP_202_ACCEPTED)
         # update components
-        components = request_data.get("components", {})
+        components = request_data.pop("components", {})
         try:
             for component in components.items():
                 new_report_component.component_name = component[0]
                 new_report_component.component_value = component[1]
-                new_report_component = ReportComponent.objects.create(component_name=component[0], component_value=component[1], test_report_id=id)
+                new_report_component = ReportComponent.objects.create(component_name=component[0], component_value=component[1], test_report_id=testreport_obj.id)
         except Exception:
             print('Error: failed to update components')
-        TestReports.objects.filter(id=id).update(**request_data)
+        TestReports.objects.filter(id=testreport_obj.id).update(**request_data)
         return Response({"message": "update successfully", "data": request_data}, status=status.HTTP_201_CREATED)
 
-    def delete(self, request, id):
-        post_data = json.loads(request.body)
-        obj = TestReports.objects.get(id=post_data['id'])
-        obj.delete()
-        return Response(post_data, status=status.HTTP_200_OK)
+    @action(methods=['get'], detail=True)
+    def all_abort(self, request, *args, **kwargs):
+        testreport_obj = self.get_object() # TestReports object (id)
+        previous_test_end_time = testreport_obj.test_end_time
+        test_case_run = TestCaseRun.objects.filter(test_report_id=testreport_obj.id)
+        test_case_run.filter(status__in=[0, 1]).update(status=4)
+        #must update the run step to 4
+        testreport_obj.run_step = 4
+        if (previous_test_end_time == None):  # skip set start time when already have one
+            testreport_obj.test_end_time = datetime.datetime.now()
+        testreport_obj.save()
+        return Response({"message": "Abort all successfully", "data": ""}, status=status.HTTP_202_ACCEPTED)
 
-
-class TestReportDetailView(GenericAPIView):
+class TestReportDetailView(viewsets.ModelViewSet):
+    queryset = TestReports.objects.all()
     serializer_class = TestReportDetailSerializer
+    pagination_class = MyPage # ??
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter] # ??
+    filterset_fields = ('id', ) # django_filters
+    search_fields = ('id', ) # ??
+    ordering_fields = ('id', 'create_time') # ??
+    ordering = ['-create_time'] # ??
 
-    def get(self, request, id):
-        queryset = Q()
-        report_id = try_get_id(request, id)
-        if report_id is None:
-            return Response({"message": "Failed: No report id.", "data": {},
-                             'status': status.HTTP_404_NOT_FOUND})
-        queryset &= Q(id=report_id)
-        obj_report = TestReports.objects.get(queryset)
-        report_data = TestReportDetailSerializer(obj_report)
-        return Response({
-            'data': report_data.data,
-            'status': status.HTTP_200_OK,
-        }, status=status.HTTP_200_OK)
-
-
-    def post(self, request, id):
+    def update(self, request, *args, **kwargs):
         request_data = json.loads(request.body)
-        testreport_obj = TestReports.objects.get(id=id)
+        testreport_obj = self.get_object() # TestReports object (id)
         request_comment = request_data.get('comment', '')
         run_status = request_data.get('status', -1)
         # search if any unfinished old test_case_run record
-        old_test_case_run = testreport_obj.test_case_run.all().filter(name=request_data.get("Name"), status__in=[0, 1])
+        old_test_case_run = testreport_obj.test_case_run.all().filter(testcase_name=request_data.get("testcase_name"), status__in=[0, 1])
         if run_status > 1 :
             if old_test_case_run:
                 old_test_case_run.update(**request_data)
@@ -180,20 +177,80 @@ class TestReportDetailView(GenericAPIView):
                     testreport_obj.test_case_run.add(_new_testcaserun_obj)
         return Response({"message": "Update Success", "data": request_data}, status=status.HTTP_200_OK)
 
-    def delete(self, request, id):
-        return Response({"message": "Delete Successfully"}, status=status.HTTP_200_OK)
+    def delete(self, request, *args, **kwargs):
+        print("this view does not support update function")
+        return Response({})
 
+class TestCaseRunView(viewsets.ModelViewSet):
+    queryset = TestCaseRun.objects.all()
+    serializer_class = TestCaseRunSerializer
+    pagination_class = MyPage # ??
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter] # ??
+    filterset_fields = ('id', 'testcase_name', 'test_report_id', 'status') # django_filters
+    search_fields = ('id', 'testcase_name', 'test_report_id', 'status') # ??
+    ordering_fields = ('id', 'create_time') # ??
+    ordering = ['-create_time'] # ??
 
-def try_get_id(request, id):
-    # first we try to get id from request, when failed, try to turn id to int
-    new_id = request.GET.get("id", None)
-    try:
-        new_id = int(new_id)
-    except Exception as request_id_err:
-        print(f"failed to get an int id from request, error: {request_id_err}.")
+    def create(self, request, *args, **kwargs):
+        request_data = json.loads(request.body)
+        test_report = request_data.pop('test_report', 0)
         try:
-            new_id = int(id)
-        except Exception as id_err:
-            new_id = None
-            print(f"failed to turn id to int, error: {id_err}.")
-    return new_id
+            test_report_obj = TestReports.objects.get(id=test_report)
+        except Exception as e:
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE, data={"message": f"Failed, testreport id: {test_report} not found.", "data": request_data, "status": status.HTTP_406_NOT_ACCEPTABLE})
+        request_data["test_report_id"] = test_report
+        # check if test_report finished
+        test_report_run_status = test_report_obj.run_status
+        test_report_run_step = test_report_obj.run_step
+        if test_report_run_step > 3 or not test_report_run_status:
+             return Response(status=status.HTTP_406_NOT_ACCEPTABLE, data={"message": f"Failed, testreport {test_report} is closed.", "data": request_data, "status": status.HTTP_406_NOT_ACCEPTABLE})
+        serializer = TestCaseRunSerializer(data=request_data)
+        serializer.is_valid(raise_exception=True)
+        obj = TestCaseRun.objects.create(**request_data)
+        return Response(status=status.HTTP_201_CREATED, data={"message": "create successfully", "data": TestCaseRunSerializer(obj).data, "status": status.HTTP_201_CREATED})
+
+    def update(self, request, *args, **kwargs):
+        request_data = json.loads(request.body)
+        print("this view does not support update function")
+        return Response({})
+
+    def delete(self, request, *args, **kwargs):
+        print("this view does not support update function")
+        return Response({})
+
+class ReportComponentView(viewsets.ModelViewSet):
+    queryset = ReportComponent.objects.all()
+    serializer_class = ReportComponentSerializer
+    pagination_class = MyPage # ??
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter] # ??
+    filterset_fields = ('id', 'component_name', 'test_report_id') # django_filters
+    search_fields = ('id', 'component_name', 'test_report_id') # ??
+    ordering_fields = ('id', 'create_time') # ??
+    ordering = ['-create_time'] # ??
+
+    def create(self, request, *args, **kwargs):
+        request_data = json.loads(request.body)
+        test_report = request_data.pop('test_report', 0)
+        try:
+            test_report_obj = TestReports.objects.get(id=test_report)
+        except Exception as e:
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE, data={"message": f"Failed, testreport id: {test_report} not found.", "data": request_data, "status": status.HTTP_406_NOT_ACCEPTABLE})
+        request_data["test_report_id"] = test_report
+        # check if test_report finished
+        test_report_run_status = test_report_obj.run_status
+        test_report_run_step = test_report_obj.run_step
+        if test_report_run_step > 3 or not test_report_run_status:
+             return Response(status=status.HTTP_406_NOT_ACCEPTABLE, data={"message": f"Failed, testreport {test_report} is closed.", "data": request_data, "status": status.HTTP_406_NOT_ACCEPTABLE})
+        serializer = ReportComponentSerializer(data=request_data)
+        serializer.is_valid(raise_exception=True)
+        obj = ReportComponent.objects.create(**request_data)
+        return Response(status=status.HTTP_201_CREATED, data={"message": "create successfully", "data": TestCaseRunSerializer(obj).data, "status": status.HTTP_201_CREATED})
+
+    def update(self, request, *args, **kwargs):
+        request_data = json.loads(request.body)
+        print("this view does not support update function")
+        return Response({})
+
+    def delete(self, request, *args, **kwargs):
+        print("this view does not support update function")
+        return Response({})
