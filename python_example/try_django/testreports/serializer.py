@@ -19,8 +19,9 @@ class ReportComponentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReportComponent
-        fields = ['component_name', 'component_value']
+        fields = ['component_name', 'component_value', 'test_report']
         ordering = ['-create_time']
+
 
 class TestReportsSerializer(serializers.ModelSerializer):
     passrate = serializers.SerializerMethodField()
@@ -36,7 +37,7 @@ class TestReportsSerializer(serializers.ModelSerializer):
     def get_passrate(self, obj):
         test_case_run = TestCaseRun.objects.filter(test_report_id=obj.id)
         if test_case_run.count() > 0:
-            return int(len([item for item in test_case_run if item.status == 2]) / obj.test_case_run.all().count() * 100)
+            return int(len([item for item in test_case_run if item.status == 2]) / test_case_run.count() * 100)
         else:
             return 0
 
@@ -48,7 +49,9 @@ class TestReportDetailSerializer(TestReportsSerializer):
 
     class Meta:
         model = TestReports
-        fields = ['report_component', 'passrate', 'matrix_data', 'testcase_run', 'create_time']
+        fields = ['id', 'project_name', 'run_step', 'run_status',
+                  'report_type', 'test_report_url', 'artifactory_url',
+                  'comment', 'requester', 'requester_ip', 'report_component', 'matrix_data', 'testcase_run', 'create_time']
         ordering = ['-create_time']
 
     def get_matrix_data(self, obj):
