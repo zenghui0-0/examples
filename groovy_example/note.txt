@@ -16,3 +16,8 @@
 
 [dir]
 returns in dir won't return whole function
+
+[findAll]
+def A = "~11;22;44.55//3"
+def pattern = /\d+/
+A.findAll(pattern).sort()
