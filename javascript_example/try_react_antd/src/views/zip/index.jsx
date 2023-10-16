@@ -1,5 +1,8 @@
 import React, { Component } from "react";
-import { Table, Tag, Form, Icon, Button, Input, message, Collapse } from "antd";
+import { FileOutlined, FileZipOutlined } from '@ant-design/icons';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Table, Tag, Button, Input, message, Collapse } from "antd";
 import { excelList } from "@/api/excel";
 const { Panel } = Collapse;
 const columns = [
@@ -116,7 +119,7 @@ class Zip extends Component {
                 <Input
                   style={{ width: "250px" }}
                   prefix={
-                    <Icon type="file" style={{ color: "rgba(0,0,0,.25)" }} />
+                    <FileOutlined style={{ color: "rgba(0,0,0,.25)" }} />
                   }
                   placeholder="请输入文件名(默认file)"
                   onChange={this.filenameChange}
@@ -125,7 +128,7 @@ class Zip extends Component {
               <Form.Item>
                 <Button
                   type="primary"
-                  icon="file-zip"
+                  icon={<FileZipOutlined />}
                   onClick={this.handleDownload.bind(null, "all")}
                 >
                   全部导出
@@ -134,7 +137,7 @@ class Zip extends Component {
               <Form.Item>
                 <Button
                   type="primary"
-                  icon="file-zip"
+                  icon={<FileZipOutlined />}
                   onClick={this.handleDownload.bind(null, "selected")}
                 >
                   导出已选择项
