@@ -5,7 +5,7 @@ import { Editor } from "@toast-ui/react-editor";
 const Markdown = () => {
   return (
     <Editor
-      initialValue="hello Admin"
+      initialValue="hello Admin!"
       previewStyle="vertical"
       height="600px"
       initialEditType="markdown"
