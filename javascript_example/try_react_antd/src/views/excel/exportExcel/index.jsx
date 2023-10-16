@@ -1,16 +1,8 @@
 import React, { Component } from "react";
-import {
-  Table,
-  Tag,
-  Form,
-  Icon,
-  Button,
-  Input,
-  Radio,
-  Select,
-  message,
-  Collapse,
-} from "antd";
+import { FileExcelOutlined, FileOutlined } from '@ant-design/icons';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Table, Tag, Button, Input, Radio, Select, message, Collapse } from "antd";
 
 import { excelList } from "@/api/excel";
 const { Panel } = Collapse;
@@ -140,7 +132,7 @@ class Excel extends Component {
                 <Input
                   style={{ width: "250px" }}
                   prefix={
-                    <Icon type="file" style={{ color: "rgba(0,0,0,.25)" }} />
+                    <FileOutlined style={{ color: "rgba(0,0,0,.25)" }} />
                   }
                   placeholder="请输入文件名(默认excel-file)"
                   onChange={this.filenameChange}
@@ -169,7 +161,7 @@ class Excel extends Component {
               <Form.Item>
                 <Button
                   type="primary"
-                  icon="file-excel"
+                  icon={<FileExcelOutlined />}
                   onClick={this.handleDownload.bind(null, "all")}
                 >
                   全部导出
@@ -178,7 +170,7 @@ class Excel extends Component {
               <Form.Item>
                 <Button
                   type="primary"
-                  icon="file-excel"
+                  icon={<FileExcelOutlined />}
                   onClick={this.handleDownload.bind(null, "selected")}
                 >
                   导出已选择项
