@@ -2,7 +2,6 @@ import React from 'react';
 import TypingCard from '@/components/TypingCard'
 const Doc = () => {
   const cardContent = `
-    作者博客请戳这里 <a href="https://www.baidu.com" target="_blank">博客</a>。
     欢迎大家与我交流，如果觉得博客不错，也麻烦给博客赏个 star 哈。
   `
   return (
