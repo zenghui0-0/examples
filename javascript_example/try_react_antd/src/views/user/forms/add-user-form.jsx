@@ -1,5 +1,7 @@
 import React, { Component } from "react";
-import { Form, Input, Select, Modal } from "antd";
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Input, Select, Modal } from "antd";
 import { reqValidatUserID } from "@/api/user";
 const { TextArea } = Input;
 class AddUserForm extends Component {
