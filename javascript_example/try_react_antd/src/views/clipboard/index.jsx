@@ -1,5 +1,6 @@
 import React from "react";
-import clip from "@/utils/clipboard"; 
+import clip from "@/utils/clipboard";
+import { CopyOutlined } from '@ant-design/icons';
 import { Button, Row, Col } from "antd";
 
 const text = `
@@ -36,7 +37,7 @@ const Clipboard = () => {
         <Col span={2}>
           <Button
             type="primary"
-            icon="copy"
+            icon={<CopyOutlined />}
             onClick={(e) => {
               handleCopy(text, e);
             }}
