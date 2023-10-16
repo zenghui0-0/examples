@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Icon, Menu, Dropdown, Modal, Layout, Avatar } from "antd";
+import { CaretDownOutlined } from '@ant-design/icons';
+import { Menu, Dropdown, Modal, Layout, Avatar } from "antd";
 import { Link } from "react-router-dom";
 import { logout, getUserInfo } from "@/store/actions";
 import FullScreen from "@/components/FullScreen";
@@ -49,7 +50,7 @@ const LayoutHeader = (props) => {
       <Menu.Item key="project">
         <a
           target="_blank"
-          href="https://github.com/NLRX-WJC/react-antd-admin-template"
+          href=""
           rel="noopener noreferrer"
         >
           项目地址
@@ -78,32 +79,30 @@ const LayoutHeader = (props) => {
     }
     return styles;
   };
-  return (
-    <>
-      {/* 这里是仿照antd pro的做法,如果固定header，
-      则header的定位变为fixed，此时需要一个定位为relative的header把原来的header位置撑起来 */}
-      {fixedHeader ? <Header /> : null}
-      <Header
-        style={computedStyle()}
-        className={fixedHeader ? "fix-header" : ""}
-      >
-        <Hamburger />
-        <BreadCrumb />
-        <div className="right-menu">
-          <FullScreen />
-          {showSettings ? <Settings /> : null}
-          <div className="dropdown-wrap">
-            <Dropdown overlay={menu}>
-              <div>
-                <Avatar shape="square" size="medium" src={avatar} />
-                <Icon style={{ color: "rgba(0,0,0,.3)" }} type="caret-down" />
-              </div>
-            </Dropdown>
-          </div>
+  return <>
+    {/* 这里是仿照antd pro的做法,如果固定header，
+    则header的定位变为fixed，此时需要一个定位为relative的header把原来的header位置撑起来 */}
+    {fixedHeader ? <Header /> : null}
+    <Header
+      style={computedStyle()}
+      className={fixedHeader ? "fix-header" : ""}
+    >
+      <Hamburger />
+      <BreadCrumb />
+      <div className="right-menu">
+        <FullScreen />
+        {showSettings ? <Settings /> : null}
+        <div className="dropdown-wrap">
+          <Dropdown overlay={menu}>
+            <div>
+              <Avatar shape="square" size="medium" src={avatar} />
+              <CaretDownOutlined style={{ color: "rgba(0,0,0,.3)" }} />
+            </div>
+          </Dropdown>
         </div>
-      </Header>
-    </>
-  );
+      </div>
+    </Header>
+  </>;
 };
 
 const mapStateToProps = (state) => {
