@@ -1,5 +1,6 @@
 import React from "react";
-import { Row, Col, Icon } from "antd";
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Row, Col } from "antd";
 import CountUp from "react-countup";
 import "./index.less";
 
@@ -46,7 +47,7 @@ const PanelGroup = (props) => {
           >
             <div className="card-panel">
               <div className="card-panel-icon-wrapper">
-                <Icon
+                <LegacyIcon
                   className={chart.type}
                   style={{ fontSize: 55, color: chart.color }}
                   type={chart.icon}
