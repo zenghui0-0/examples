@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import { Menu, Icon } from "antd";
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { Menu } from "antd";
 import { Link, withRouter } from "react-router-dom";
 import { Scrollbars } from "react-custom-scrollbars";
 import { connect } from "react-redux";
@@ -45,7 +46,7 @@ class Meun extends Component {
           pre.push(
             <Menu.Item key={item.path}>
               <Link to={item.path}>
-                {item.icon ? <Icon type={item.icon} /> : null}
+                {item.icon ? <LegacyIcon type={item.icon} /> : null}
                 <span>{item.title}</span>
               </Link>
             </Menu.Item>
@@ -68,7 +69,7 @@ class Meun extends Component {
               key={item.path}
               title={
                 <span>
-                  {item.icon ? <Icon type={item.icon} /> : null}
+                  {item.icon ? <LegacyIcon type={item.icon} /> : null}
                   <span>{item.title}</span>
                 </span>
               }
@@ -114,7 +115,7 @@ class Meun extends Component {
     const openKey = this.state.openKey;
     return (
       <div className="sidebar-menu-container">
-        <Scrollbars autoHide autoHideTimeout={1000} autoHideDuration={200}>
+            {/* <Scrollbars autoHide autoHideTimeout={1000} autoHideDuration={200}> */}
           <DragDropContext onDragEnd={this.onDragEnd}>
             <Droppable droppableId="droppable">
               {(provided, snapshot) => (
@@ -148,7 +149,7 @@ class Meun extends Component {
               )}
             </Droppable>
           </DragDropContext>
-        </Scrollbars>
+    {/*     </Scrollbars>*/}
       </div>
     );
   }
