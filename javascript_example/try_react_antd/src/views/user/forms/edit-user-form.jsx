@@ -1,5 +1,7 @@
 import React, { Component } from "react";
-import { Form, Input, Select, Modal } from "antd";
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Input, Select, Modal } from "antd";
 const { TextArea } = Input;
 class EditUserForm extends Component {
   render() {
