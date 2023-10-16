@@ -1,16 +1,8 @@
 import React, { Component } from "react";
-import {
-  Table,
-  Tag,
-  Form,
-  Button,
-  Input,
-  Collapse,
-  Pagination,
-  Divider,
-  message,
-  Select
-} from "antd";
+import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Table, Tag, Button, Input, Collapse, Pagination, Divider, message, Select } from "antd";
 import { tableList, deleteItem,editItem } from "@/api/table";
 import EditForm from "./forms/editForm"
 const { Column } = Table;
@@ -179,7 +171,7 @@ class TableComponent extends Component {
                 </Select>
               </Form.Item>
               <Form.Item>
-                <Button type="primary" icon="search" onClick={this.fetchData}>
+                <Button type="primary" icon={<SearchOutlined />} onClick={this.fetchData}>
                   搜索
                 </Button>
               </Form.Item>
@@ -211,9 +203,9 @@ class TableComponent extends Component {
           <Column title="时间" dataIndex="date" key="date" width={195} align="center"/>
           <Column title="操作" key="action" width={195} align="center"render={(text, row) => (
             <span>
-              <Button type="primary" shape="circle" icon="edit" title="编辑" onClick={this.handleEdit.bind(null,row)}/>
+              <Button type="primary" shape="circle" icon={<EditOutlined />} title="编辑" onClick={this.handleEdit.bind(null,row)}/>
               <Divider type="vertical" />
-              <Button type="primary" shape="circle" icon="delete" title="删除" onClick={this.handleDelete.bind(null,row)}/>
+              <Button type="primary" shape="circle" icon={<DeleteOutlined />} title="删除" onClick={this.handleDelete.bind(null,row)}/>
             </span>
           )}/>
         </Table>
