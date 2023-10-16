@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import screenfull from "screenfull";
-import { Icon, message, Tooltip } from "antd";
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import { message, Tooltip } from "antd";
 import "./index.less";
 
 const click = () => {
@@ -30,7 +31,7 @@ const FullScreen = () => {
   return (
     <div className="fullScreen-container">
       <Tooltip placement="bottom" title={title}>
-        <Icon type={type} onClick={click} />
+        <LegacyIcon type={type} onClick={click} />
       </Tooltip>
     </div>
   );
