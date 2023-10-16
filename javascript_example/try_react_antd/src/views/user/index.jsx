@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Card, Button, Table, message, Divider } from "antd";
 import { getUsers, deleteUser, editUser, addUser } from "@/api/user";
 import TypingCard from '@/components/TypingCard'
@@ -114,9 +115,9 @@ class User extends Component {
             <Column title="用户描述" dataIndex="description" key="description" align="center" />
             <Column title="操作" key="action" width={195} align="center"render={(text, row) => (
               <span>
-                <Button type="primary" shape="circle" icon="edit" title="编辑" onClick={this.handleEditUser.bind(null,row)}/>
+                <Button type="primary" shape="circle" icon={<EditOutlined />} title="编辑" onClick={this.handleEditUser.bind(null,row)}/>
                 <Divider type="vertical" />
-                <Button type="primary" shape="circle" icon="delete" title="删除" onClick={this.handleDeleteUser.bind(null,row)}/>
+                <Button type="primary" shape="circle" icon={<DeleteOutlined />} title="删除" onClick={this.handleDeleteUser.bind(null,row)}/>
               </span>
             )}/>
           </Table>
