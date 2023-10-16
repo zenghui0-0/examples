@@ -1,5 +1,7 @@
 import React, { Component } from "react";
-import { Form, Input, DatePicker, Select, Rate, Modal } from "antd";
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Input, DatePicker, Select, Rate, Modal } from "antd";
 import moment from "moment";
 import "moment/locale/zh-cn";
 moment.locale("zh-cn");
