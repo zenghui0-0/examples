@@ -5,6 +5,8 @@
 5, shutdown: virsh shutdown host_name
 6, start: virsh start hostname
 7, destroy: virsh destroy hostname
+8, virt-cat -d win10-fast "C:\your_path\test.txt"
+9, virt-copy-in -a /win10.qcow2 "/root/" "/"
 
 [install]
 1, virt-install
