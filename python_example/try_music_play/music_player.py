@@ -2,17 +2,20 @@ import sys
 from PyQt5.QtWidgets import (
     QApplication, QSystemTrayIcon, QMenu, QAction, QWidget, QVBoxLayout, QListWidget, QPushButton, QMessageBox, QHBoxLayout, QLabel
 )
-from PyQt5.QtGui import QIcon, QColor, QPalette
+from PyQt5.QtGui import QIcon
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
-from PyQt5.QtCore import QUrl, Qt
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import QTimer, Qt
+from PyQt5.QtCore import QUrl, Qt, QPoint
+
 
 class MusicPlayerApp(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
         self.initMediaPlayer()
+
+        # 用于窗口拖动
+        self.dragging = False
+        self.offset = QPoint()
 
     def initUI(self):
         # 设置窗口标题和大小
@@ -179,72 +182,23 @@ class MusicPlayerApp(QWidget):
         self.tray_icon.hide()
         QApplication.quit()
 
-# 广告页面
-class AdPage(QWidget):
-    def __init__(self, main_window):
-        super().__init__()
-        self.main_window = main_window  # 主界面引用
-        self.initUI()
+    # 以下方法用于实现窗口拖动功能
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton and self.title_bar.underMouse():
+            self.dragging = True
+            self.offset = event.globalPos() - self.pos()
 
-    def initUI(self):
-        # 设置窗口标题和大小
-        self.setWindowTitle('广告页面')
-        self.setGeometry(100, 100, 400, 300)
+    def mouseMoveEvent(self, event):
+        if self.dragging:
+            self.move(event.globalPos() - self.offset)
 
-        # 创建一个垂直布局
-        layout = QVBoxLayout()
-
-        # 添加广告图片
-        self.ad_label = QLabel(self)
-        pixmap = QPixmap('ad_image.jpg')  # 替换为你的广告图片路径
-        self.ad_label.setPixmap(pixmap)
-        self.ad_label.setAlignment(Qt.AlignCenter)
-        layout.addWidget(self.ad_label)
-
-        # 添加倒计时标签
-        self.countdown_label = QLabel('3', self)
-        self.countdown_label.setAlignment(Qt.AlignCenter)
-        self.countdown_label.setStyleSheet('font-size: 30px; color: red;')
-        layout.addWidget(self.countdown_label)
-
-        # 添加跳过按钮
-        self.skip_button = QPushButton('跳过广告', self)
-        self.skip_button.clicked.connect(self.close_ad)
-        layout.addWidget(self.skip_button)
-
-        # 设置布局
-        self.setLayout(layout)
-
-        # 初始化倒计时
-        self.countdown = 3
-
-        # 创建定时器
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.update_countdown)
-        self.timer.start(1000)  # 每秒触发一次
-
-    def update_countdown(self):
-        self.countdown -= 1
-        self.countdown_label.setText(str(self.countdown))
-
-        if self.countdown <= 0:
-            self.timer.stop()
-            self.close_ad()  # 关闭广告页面
-
-    def close_ad(self):
-        self.close()  # 关闭广告页面
-        self.main_window.show()  # 显示主界面
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.dragging = False
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    
-    # 创建主界面
     music_player = MusicPlayerApp()
-    
-    # 创建广告页面
-    # ad_page = AdPage(music_player)
-    # ad_page.show()  # 显示广告页面
-    
     music_player.show()
     sys.exit(app.exec_())

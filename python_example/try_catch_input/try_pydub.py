@@ -58,8 +58,8 @@ def on_press(key):
         try:
             if counting % 15 == 0:
                 print(f"{counting}")
-                play_sound(specil_sound_file, clipps=4000, decibel=10)
-            play_sound(sound_file, decibel=10)
+                play_sound(specil_sound_file, clipps=4000, decibel=0)
+            play_sound(sound_file, decibel=-10)
         except Exception as e:
             print(f"Failed to play sound: {sound_file}, error: {e}")
     except AttributeError:
