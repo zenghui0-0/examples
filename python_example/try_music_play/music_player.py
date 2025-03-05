@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import (
-    QApplication, QSystemTrayIcon, QMenu, QAction, QWidget, QVBoxLayout, QListWidget, QPushButton, QMessageBox, QHBoxLayout, QLabel
+    QApplication, QSystemTrayIcon, QMenu, QAction, QWidget, QVBoxLayout, QListWidget, QPushButton, QMessageBox, QHBoxLayout, QLabel, QListWidgetItem
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
@@ -20,7 +20,7 @@ class MusicPlayerApp(QWidget):
     def initUI(self):
         # 设置窗口标题和大小
         self.setWindowTitle('音乐播放器')
-        self.setGeometry(300, 300, 400, 300)
+        self.setGeometry(300, 300, 600, 400)
 
         # 设置深色背景
         self.setStyleSheet("""
@@ -79,8 +79,13 @@ class MusicPlayerApp(QWidget):
 
         # 音乐列表
         self.music_list = QListWidget(self)
-        self.music_list.addItems(["music1.mp3", "music2.mp3", "music3.mp3"])  # 添加音乐文件
+        # self.music_list.addItems(["music1.mp3", "music2.mp3", "music3.mp3"])  # 添加音乐文件
+        # 创建带图标的列表项
+        for music in ["music1.mp3", "music2.mp3", "music3.mp3"]:
+            item = QListWidgetItem(QIcon(f"icons/{music.replace('.mp3', '.jpg')}"), music)
+            self.music_list.addItem(item)
         self.music_list.itemClicked.connect(self.select_music)
+
 
         # 播放/暂停按钮
         self.btn_play_pause = QPushButton('播放', self)

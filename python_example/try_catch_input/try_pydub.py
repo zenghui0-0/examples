@@ -46,8 +46,8 @@ def on_press(key):
     counting += 1
     global last_key_time
     current_time = time.time()
-    # 防抖：忽略 0.1 秒内的重复事件
-    if current_time - last_key_time < 0.1:
+    # 防抖：忽略 0.3 秒内的重复事件
+    if current_time - last_key_time < 0.3:
         return
     last_key_time = current_time
     # key_char = key.char.lower()
