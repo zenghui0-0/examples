@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  client:
+    build: ./client
+    ports:
+      - "19000:19000"
+      - "19001:19001"
+      - "19002:19002"
+    environment:
+      - CLIENT_API_BASE=http://server:5000
+      - CLIENT_AI_BASE=http://ai-service:8000
+    depends_on:
+      - server
+      - ai-service
+
+  server:
+    build: ./server
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/writing-app
+      - JWT_SECRET=your_jwt_secret
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      - mongo
+
+  ai-service:
+    build: ./ai-service
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - LOCAL_MODEL_PATH=/app/models
+
+  mongo:
+    image: mongo:5.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
