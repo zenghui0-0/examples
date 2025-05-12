@@ -1,0 +1,17 @@
+{
+  "name": "writing-assistant",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "build:android": "cd android && ./gradlew assembleRelease"
+  },
+  "dependencies": {
+    "@react-native-community/netinfo": "^9.3.7",
+    "react-native-gesture-handler": "^2.9.0",
+    "react-native-reanimated": "^3.3.0",
+    "react-native-screens": "^3.18.2",
+    "react-native-sqlite-storage": "^6.0.1",
+    "react-native-vector-icons": "^9.2.0"
+  }
+}
